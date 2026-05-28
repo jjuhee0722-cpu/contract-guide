@@ -12,6 +12,7 @@ import json
 import os
 import re
 import urllib.request
+import urllib.parse
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 
@@ -60,8 +61,13 @@ def fetch_effective_date(law_url: str) -> str | None:
     반환값: 'YYYY-MM-DD' 형식 문자열 또는 None
     """
     try:
+        # 한글 URL을 percent-encoding으로 변환 (Linux 환경 대응)
+        parsed = urllib.parse.urlparse(law_url)
+        encoded_path = urllib.parse.quote(parsed.path, safe="/")
+        encoded_url  = parsed._replace(path=encoded_path).geturl()
+
         req = urllib.request.Request(
-            law_url,
+            encoded_url,
             headers={"User-Agent": "Mozilla/5.0 (compatible; law-checker/1.0)"}
         )
         with urllib.request.urlopen(req, timeout=20) as resp:
