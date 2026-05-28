@@ -54,43 +54,51 @@ class TextCollector(HTMLParser):
         return " ".join(self.texts)
 
 
-# ── 법제처 페이지에서 시행일자 파싱 ─────────────────────────────────────────
+# ── 법제처 리다이렉트 URL에서 시행일자 추출 ─────────────────────────────────
 def fetch_effective_date(law_url: str) -> str | None:
     """
-    법제처 법령 페이지를 가져와 '시행 YYYY. M. D.' 형태의 날짜를 파싱합니다.
-    반환값: 'YYYY-MM-DD' 형식 문자열 또는 None
+    법제처 법령 URL(법령명 기반)은 최신 버전 페이지로 리다이렉트되며,
+    최종 URL에 efYd=YYYYMMDD 파라미터가 포함됩니다.
+    이 파라미터를 읽어 시행일자를 반환합니다 — 인증 불필요.
     """
     try:
         # 한글 URL을 percent-encoding으로 변환 (Linux 환경 대응)
-        parsed = urllib.parse.urlparse(law_url)
-        encoded_path = urllib.parse.quote(parsed.path, safe="/")
-        encoded_url  = parsed._replace(path=encoded_path).geturl()
+        parsed      = urllib.parse.urlparse(law_url)
+        enc_path    = urllib.parse.quote(parsed.path, safe="/")
+        encoded_url = parsed._replace(path=enc_path).geturl()
 
+        # 리다이렉트를 따라가며 최종 URL을 확인
         req = urllib.request.Request(
             encoded_url,
             headers={"User-Agent": "Mozilla/5.0 (compatible; law-checker/1.0)"}
         )
         with urllib.request.urlopen(req, timeout=20) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
+            final_url = resp.url          # 리다이렉트 후 최종 URL
+            html      = resp.read().decode("utf-8", errors="replace")
 
-        # 패턴 1: "시행 2024. 1. 1." 또는 "시행 2024.1.1"
+        print(f"  최종 URL: {final_url[:120]}")
+
+        # ① 최종 URL 파라미터에서 efYd 추출 (예: ?efYd=20240101)
+        qs = urllib.parse.parse_qs(urllib.parse.urlparse(final_url).query)
+        if "efYd" in qs:
+            s = qs["efYd"][0]
+            if len(s) == 8:
+                return f"{s[:4]}-{s[4:6]}-{s[6:]}"
+
+        # ② HTML 본문에서 "시행 YYYY. M. D." 패턴 검색
         m = re.search(r'시행\s+(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.?', html)
         if m:
             y, mo, d = m.group(1), m.group(2).zfill(2), m.group(3).zfill(2)
             return f"{y}-{mo}-{d}"
 
-        # 패턴 2: 메타데이터나 다른 형식
-        m2 = re.search(r'enfoDt["\s:=]+(\d{8})', html)
+        # ③ 스크립트/JSON 내 날짜 패턴
+        m2 = re.search(r'efYd\s*[:=]\s*["\']?(\d{8})', html)
         if m2:
             s = m2.group(1)
             return f"{s[:4]}-{s[4:6]}-{s[6:]}"
 
-        # 패턴 3: JSON-LD 또는 스크립트 내 날짜
-        m3 = re.search(r'"effectiveDate"\s*:\s*"(\d{4}-\d{2}-\d{2})"', html)
-        if m3:
-            return m3.group(1)
-
-        print("  [WARN] 페이지에서 시행일자를 찾지 못했습니다.")
+        print("  [WARN] 최종 URL과 HTML 모두에서 시행일자를 찾지 못했습니다.")
+        print(f"  HTML 앞부분: {html[:400]}")
         return None
 
     except Exception as exc:
