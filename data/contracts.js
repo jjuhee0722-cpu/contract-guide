@@ -4,8 +4,24 @@ const CONTRACT_DATA = {
     "baseLaw": "국가를 당사자로 하는 계약에 관한 법률",
     "note": "이 파일만 수정하면 웹사이트 내용이 자동 반영됩니다. 법령 개정 시 law.go.kr에서 현행 조문을 확인 후 수정하세요.",
     "lastChecked": "2026-05-28",
-    "lawVersions": {},
-    "amendmentAlert": false
+    "lawVersions": {
+      "본법": {
+        "label": "국가계약법 (본법)",
+        "effectiveDate": "2026-01-02",
+        "url": "https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률"
+      },
+      "시행령": {
+        "label": "국가계약법 시행령",
+        "effectiveDate": "2026-05-12",
+        "url": "https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령"
+      },
+      "시행규칙": {
+        "label": "국가계약법 시행규칙",
+        "effectiveDate": "2026-01-02",
+        "url": "https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙"
+      }
+    },
+    "amendmentAlert": true
   },
   "categories": [
     {
