@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>국가기관 계약방법 조회</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="data/contracts.js" onerror=""></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      국가기관 계약방법 조회
+      <span>물품구매 · 용역발주 계약유형 및 법령 안내</span>
+    </div>
+    <div class="header-badge" id="lastUpdated">국가계약법 기준</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- STEP 1: 계약 유형 -->
+  <div class="card">
+    <div class="card-title">STEP 1 &nbsp; 계약 유형 선택</div>
+    <div class="category-grid">
+      <button class="category-btn active" data-category="goods">
+        <span class="category-icon">📦</span>
+        <span class="category-label">물품 구매</span>
+      </button>
+      <button class="category-btn" data-category="service">
+        <span class="category-icon">🔧</span>
+        <span class="category-label">용역 발주</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 용역 세부 유형 (용역 선택 시만 표시) -->
+  <div class="card" id="serviceSubCard" style="display:none;">
+    <div class="card-title">STEP 2 &nbsp; 용역 유형 선택</div>
+    <div class="subtype-grid" id="serviceSubGrid"></div>
+  </div>
+
+  <!-- STEP 2/3: 추정가격 입력 -->
+  <div class="card">
+    <div class="card-title" id="amountStepLabel">STEP 2 &nbsp; 추정가격 입력</div>
+    <div class="amount-input-wrap">
+      <input
+        type="number"
+        id="amountInput"
+        class="amount-input"
+        placeholder="금액을 입력하세요"
+        min="0"
+        step="1"
+        inputmode="numeric"
+        aria-label="추정가격 입력 (백만원)"
+      >
+      <span class="amount-unit">백만원</span>
+    </div>
+    <div class="amount-korean" id="amountKorean"></div>
+    <div class="quick-btns">
+      <button class="quick-btn" data-amount="10">1천만원</button>
+      <button class="quick-btn" data-amount="15">1,500만원</button>
+      <button class="quick-btn" data-amount="30">3천만원</button>
+      <button class="quick-btn" data-amount="50">5천만원</button>
+      <button class="quick-btn" data-amount="80">8천만원</button>
+      <button class="quick-btn" data-amount="100">1억원</button>
+      <button class="quick-btn" data-amount="300">3억원</button>
+    </div>
+  </div>
+
+  <!-- 관련 참고 법령 (용역 유형 선택 시 표시) -->
+  <div class="card" id="relatedLawsCard" style="display:none;">
+    <div class="card-title">📚 상황별 참고 법령</div>
+    <p class="related-laws-note">아래 법령은 용역 내용에 따라 추가로 적용될 수 있는 법령입니다. 참가자격 제한 조건 설정 시 반드시 확인하세요.</p>
+    <ul class="related-laws-list" id="relatedLawsList"></ul>
+  </div>
+
+  <!-- 결과 -->
+  <div class="card" id="resultCard" style="display:none;">
+    <div class="card-title">조회 결과</div>
+    <div id="result"></div>
+  </div>
+
+</main>
+
+<footer>
+  <div>국가를 당사자로 하는 계약에 관한 법률 기준 · 법령 개정 시 <strong>data/contracts.json</strong> 수정 필요</div>
+  <div class="footer-warning">⚠ 본 자료는 참고용이며, 실제 계약 처리 시 반드시 현행 법령(law.go.kr)을 확인하세요.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- Law Detail Modal -->
+<div class="modal-overlay" id="lawModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalLawName" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div>
+        <div class="modal-law-name" id="modalLawName"></div>
+        <div class="modal-law-article" id="modalLawArticle"></div>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <a class="modal-law-link" id="modalLawLink" href="#" target="_blank" rel="noopener">↗ 국가법령정보센터에서 보기</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
