@@ -18,7 +18,8 @@ from datetime import datetime, timezone
 
 # ── 설정 ────────────────────────────────────────────────────────────────────
 API_KEY  = os.environ.get("LAW_API_KEY", "")
-BASE_URL = "http://apis.data.go.kr/1170000/law/lawSearchList.do"  # 공공데이터포털 법제처 API
+# open.law.go.kr 에서 발급받은 법제처 직접 API (OC 파라미터 방식)
+BASE_URL = "https://www.law.go.kr/DRF/lawSearch.do"
 
 DATA_JSON = os.path.join(os.path.dirname(__file__), "..", "data", "contracts.json")
 DATA_JS   = os.path.join(os.path.dirname(__file__), "..", "data", "contracts.js")
@@ -42,58 +43,58 @@ LAWS_TO_CHECK = [
     },
 ]
 
-# ── 법제처 API 호출 (공공데이터포털) ─────────────────────────────────────────
+# ── 법제처 DRF API 호출 ────────────────────────────────────────────────────
 def fetch_law_info(query: str) -> dict | None:
-    """공공데이터포털 법제처 API를 호출하여 가장 최신 법령 정보를 반환합니다."""
+    """법제처 DRF API(OC 파라미터)를 호출하여 가장 최신 법령 정보를 반환합니다."""
     params = urllib.parse.urlencode({
-        "serviceKey": API_KEY,
-        "target":     "law",
-        "query":      query,
-        "numOfRows":  "5",
-        "pageNo":     "1",
-        "type":       "json",
+        "OC":      API_KEY,
+        "target":  "law",
+        "type":    "JSON",
+        "query":   query,
+        "display": "3",
+        "sort":    "efdes",   # 시행일 내림차순
     })
     url = f"{BASE_URL}?{params}"
-    print(f"  호출 URL: {BASE_URL}?target=law&query={urllib.parse.quote(query)}&...")
     try:
         req = urllib.request.Request(url, headers={"Accept": "application/json"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             raw = resp.read().decode("utf-8")
 
-        # 응답이 XML인 경우(오류) 처리
+        # XML 오류 응답 처리
         if raw.strip().startswith("<"):
-            print(f"  [WARN] XML 오류 응답 수신: {raw[:200]}")
+            print(f"  [WARN] XML 오류 응답: {raw[:300]}")
             return None
 
         data = json.loads(raw)
-        print(f"  응답 키: {list(data.keys())}")
 
-        # 공공데이터포털 표준 응답 구조
-        body   = data.get("response", data).get("body", data.get("body", {}))
-        items  = body.get("items", {})
+        # 응답 구조: {"LawSearch": {"law": [...] or {...}}}
+        search  = data.get("LawSearch", {})
+        law_raw = search.get("law", None)
 
-        if not items:
-            # 응답 구조가 다른 경우 전체 탐색
-            for v in data.values():
-                if isinstance(v, dict) and "item" in v:
-                    items = v
-                    break
-
-        item_raw = items.get("item", None) if isinstance(items, dict) else None
-
-        if item_raw is None:
+        if law_raw is None:
             print(f"  [WARN] '{query}' 결과 없음. 응답: {raw[:300]}")
             return None
 
         # 결과가 1건이면 dict, 여러 건이면 list
-        item = item_raw[0] if isinstance(item_raw, list) else item_raw
+        laws = law_raw if isinstance(law_raw, list) else [law_raw]
+
+        # 검색어와 정확히 일치하는 법령을 우선 선택
+        matched = None
+        query_clean = query.replace(" ", "")
+        for law in laws:
+            name = law.get("법령명한글", "").replace(" ", "")
+            if name == query_clean:
+                matched = law
+                break
+        if matched is None:
+            matched = laws[0]   # 없으면 첫 번째 결과
 
         return {
-            "lawName":          item.get("법령명한글", item.get("lawNm", query)),
-            "lawId":            item.get("법령ID",     item.get("lawId", "")),
-            "promulgationDate": item.get("공포일자",   item.get("promulgDt", "")),
-            "effectiveDate":    item.get("시행일자",   item.get("enfoDt", "")),
-            "ministry":         item.get("소관부처명", item.get("ministry", "")),
+            "lawName":          matched.get("법령명한글", query),
+            "lawId":            matched.get("법령ID", ""),
+            "promulgationDate": matched.get("공포일자", ""),
+            "effectiveDate":    matched.get("시행일자", ""),
+            "ministry":         matched.get("소관부처명", ""),
         }
     except Exception as exc:
         print(f"  [ERROR] '{query}' API 호출 실패: {exc}")
