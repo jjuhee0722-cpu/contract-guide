@@ -22,9 +22,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: 법제처 API 법령 확인
-        env:
-          LAW_API_KEY: ${{ secrets.LAW_API_KEY }}
+      - name: 법제처 법령 시행일자 확인 (API 키 불필요)
         run: python scripts/check_law_updates.py
 
       - name: 변경사항 자동 커밋
