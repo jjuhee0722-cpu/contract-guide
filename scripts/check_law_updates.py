@@ -100,8 +100,8 @@ def main():
         print("        LAW_API_KEY 이름으로 등록하세요.")
         sys.exit(1)
 
-    # contracts.json 읽기
-    with open(DATA_JSON, encoding="utf-8") as f:
+    # contracts.json 읽기 (PowerShell이 생성한 UTF-8 BOM 파일 대응)
+    with open(DATA_JSON, encoding="utf-8-sig") as f:
         data = json.load(f)
 
     last_updated = data.get("meta", {}).get("lastUpdated", "1900-01-01")
