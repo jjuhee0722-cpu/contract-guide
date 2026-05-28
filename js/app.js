@@ -1,3 +1,45 @@
+/* ── 절차 법령 ref → URL 자동 매핑 ── */
+const PROC_REF_URL_MAP = [
+  { prefix: '시행규칙', url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙' },
+  { prefix: '시행령',   url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령' },
+  { prefix: '본법',     url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률' },
+];
+
+function getProcRefUrl(ref) {
+  if (!ref) return null;
+  // JSON에 직접 refUrl이 있으면 우선 사용 (향후 확장용)
+  for (const { prefix, url } of PROC_REF_URL_MAP) {
+    if (ref.startsWith(prefix)) return url;
+  }
+  return null;
+}
+
+/* ── 법령 개정 알림 배너 ── */
+function renderAmendmentBanner(meta) {
+  const banner = document.getElementById('amendmentBanner');
+  if (!banner || !meta) return;
+
+  const lastChecked = meta.lastChecked;
+  const alert       = meta.amendmentAlert;
+  const versions    = meta.lawVersions || {};
+
+  if (!lastChecked) { banner.style.display = 'none'; return; }
+
+  if (alert) {
+    // 개정 감지된 법령 목록
+    const changed = Object.values(versions)
+      .filter(v => v.effectiveDate > (meta.lastUpdated || ''))
+      .map(v => `<strong>${escHtml(v.label)}</strong> (시행일 ${escHtml(v.effectiveDate)})`)
+      .join(', ');
+    banner.className = 'amendment-banner amendment-alert';
+    banner.innerHTML = `⚠ 법령 개정 감지! ${changed || '일부 법령이 변경되었습니다'} — 내용을 확인 후 데이터를 갱신하세요.`;
+  } else {
+    banner.className = 'amendment-banner amendment-ok';
+    banner.innerHTML = `✓ 법령 최신 확인: ${escHtml(lastChecked)} — 현재 데이터는 최신 법령과 일치합니다.`;
+  }
+  banner.style.display = 'block';
+}
+
 /* ── Data Loader ── */
 async function loadData() {
   if (typeof CONTRACT_DATA !== 'undefined') return CONTRACT_DATA;
@@ -174,12 +216,16 @@ function renderResult(rule) {
     </li>`).join('');
 
   const procHTML = rule.procedures.map((p, i) => {
-    const refBadge = p.ref
-      ? `<span class="proc-ref">${escHtml(p.ref)}</span>`
-      : '';
+    let refEl = '';
+    if (p.ref) {
+      const href = p.refUrl || getProcRefUrl(p.ref);
+      refEl = href
+        ? `<a class="proc-ref proc-ref-link" href="${escHtml(href)}" target="_blank" rel="noopener" title="${escHtml(p.ref)} 원문 보기">${escHtml(p.ref)} ↗</a>`
+        : `<span class="proc-ref">${escHtml(p.ref)}</span>`;
+    }
     return `<li class="procedure-item">
       <span class="proc-num">${i + 1}</span>
-      <span class="proc-body">${escHtml(p.text)}${refBadge}</span>
+      <span class="proc-body">${escHtml(p.text)}${refEl}</span>
     </li>`;
   }).join('');
 
@@ -401,6 +447,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       updated.textContent = '최종 업데이트: ' + appData.meta.lastUpdated;
     }
     buildServiceSubGrid();
+    renderAmendmentBanner(appData.meta);
   } catch (err) {
     document.getElementById('result').innerHTML = `
       <div class="empty-state">

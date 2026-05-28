@@ -1,0 +1,39 @@
+name: 법령 최신 개정 여부 자동 확인
+
+on:
+  schedule:
+    # 매주 월요일 오전 9시 (KST = UTC+9, 즉 UTC 00:00)
+    - cron: '0 0 * * 1'
+  workflow_dispatch:   # 수동 실행 버튼 활성화
+
+permissions:
+  contents: write      # 자동 커밋을 위해 필요
+
+jobs:
+  check-laws:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 법제처 API 법령 확인
+        env:
+          LAW_API_KEY: ${{ secrets.LAW_API_KEY }}
+        run: python scripts/check_law_updates.py
+
+      - name: 변경사항 자동 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/contracts.json data/contracts.js
+          git diff --cached --quiet && echo "변경 없음 — 커밋 생략" || \
+            git commit -m "auto: 법령 최신 개정 여부 확인 업데이트 $(date +'%Y-%m-%d')"
+
+      - name: 변경사항 Push
+        run: git push

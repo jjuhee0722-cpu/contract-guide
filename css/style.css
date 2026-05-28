@@ -417,6 +417,41 @@ main {
   flex-shrink: 0;
 }
 
+/* 클릭 가능한 법령 배지 */
+a.proc-ref-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+a.proc-ref-link:hover {
+  background: #dbeafe;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(26, 79, 160, 0.12);
+}
+
+/* ── 법령 개정 알림 배너 ── */
+.amendment-banner {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border-radius: 0 0 8px 8px;
+  line-height: 1.5;
+}
+.amendment-ok {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-top: none;
+}
+.amendment-alert {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  border-top: none;
+}
+
 /* Service Sub-types */
 .subtype-grid {
   display: grid;
