@@ -21,7 +21,7 @@ const CONTRACT_DATA = {
         "url": "https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙"
       }
     },
-    "amendmentAlert": true
+    "amendmentAlert": false
   },
   "categories": [
     {
