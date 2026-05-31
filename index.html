@@ -41,16 +41,46 @@
     </div>
   </div>
 
-  <!-- STEP 2: 용역 세부 유형 (용역 선택 시만 표시) -->
+  <!-- STEP 2 (물품): 구매 방식 선택 -->
+  <div class="card" id="goodsMethodCard" style="display:none;">
+    <div class="card-title">STEP 2 &nbsp; 구매 방식 선택</div>
+    <p class="step-guide">나라장터 종합쇼핑몰(MAS)에 등록된 물품이면 별도 입찰 없이 쇼핑몰에서 구매할 수 있습니다. 해당 여부를 먼저 확인하세요.</p>
+    <div class="subtype-grid" id="goodsMethodGrid"></div>
+  </div>
+
+  <!-- STEP 2-2 (MAS): 물품 유형 선택 (MAS 선택 시만 표시) -->
+  <div class="card" id="masProductCard" style="display:none;">
+    <div class="card-title">STEP 2-2 &nbsp; 물품 유형 선택</div>
+    <p class="step-guide">물품 유형에 따라 2단계경쟁 적용 기준금액이 다릅니다. 해당 물품이 어느 유형인지 선택하세요.<br>
+      <span class="step-guide-sub">※ 근거: 물품 다수공급자계약 2단계경쟁 업무처리기준 제2조</span>
+    </p>
+    <div class="subtype-grid" id="masProductGrid"></div>
+    <div class="mas-threshold-table">
+      <div class="mas-threshold-row header">
+        <span>물품 유형</span><span>2단계경쟁 기준</span>
+      </div>
+      <div class="mas-threshold-row">
+        <span>중소기업자간 경쟁제품</span><span class="threshold-val">1억원 이상</span>
+      </div>
+      <div class="mas-threshold-row">
+        <span>중소기업이 제조하는 물품</span><span class="threshold-val">1억원 이상 (미만 면제)</span>
+      </div>
+      <div class="mas-threshold-row">
+        <span>그 외 물품</span><span class="threshold-val">5천만원 이상</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 (용역): 용역 세부 유형 -->
   <div class="card" id="serviceSubCard" style="display:none;">
     <div class="card-title">STEP 2 &nbsp; 용역 유형 선택</div>
     <p class="step-guide">용역의 성격에 따라 적용 법령과 계약방법이 달라집니다. 가장 가까운 유형을 선택하세요.</p>
     <div class="subtype-grid" id="serviceSubGrid"></div>
   </div>
 
-  <!-- STEP 2/3: 추정가격 입력 -->
+  <!-- STEP 3: 추정가격 입력 -->
   <div class="card" id="amountCard">
-    <div class="card-title" id="amountStepLabel">STEP 2 &nbsp; 추정가격 입력</div>
+    <div class="card-title">STEP 3 &nbsp; 추정가격 입력</div>
     <div class="amount-hint">
       <strong>추정가격</strong>이란 부가세(VAT)를 <em>제외한</em> 예상 계약금액입니다.
       <br>단위는 <strong>백만원</strong>입니다 &nbsp;→&nbsp; 예: 1천만원은 <code>10</code>, 5천만원은 <code>50</code>, 1억원은 <code>100</code>
@@ -69,7 +99,7 @@
       <span class="amount-unit">백만원</span>
     </div>
     <div class="amount-korean" id="amountKorean"></div>
-    <div class="quick-btns-label">빠른 선택</div>
+    <div class="quick-btns-label">빠른 선택 <span class="quick-btns-sublabel">(클릭 시 바로 조회)</span></div>
     <div class="quick-btns">
       <button class="quick-btn" data-amount="10">1천만원</button>
       <button class="quick-btn" data-amount="15">1,500만원</button>
@@ -82,6 +112,7 @@
       <button class="quick-btn" data-amount="300">3억원</button>
     </div>
     <div class="threshold-note">★ 계약방법이 바뀌는 주요 금액 경계 (2천만 · 5천만 · 2억원)</div>
+    <button class="submit-btn" id="submitBtn">🔍 계약방법 조회하기</button>
   </div>
 
   <!-- 관련 참고 법령 (용역 유형 선택 시 표시) -->
