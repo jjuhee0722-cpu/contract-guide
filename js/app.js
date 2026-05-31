@@ -7,11 +7,28 @@ const PROC_REF_URL_MAP = [
 
 function getProcRefUrl(ref) {
   if (!ref) return null;
-  // JSON에 직접 refUrl이 있으면 우선 사용 (향후 확장용)
   for (const { prefix, url } of PROC_REF_URL_MAP) {
     if (ref.startsWith(prefix)) return url;
   }
   return null;
+}
+
+/* ── 주의사항 경중 분류 ── */
+// 참고 정보성(숫자/비율 안내) 항목은 파란 스타일로 구분
+const WARN_REF_PATTERNS = [
+  /^선금\s*지급\s*비율/,
+  /^지체상금률/,
+  /^물가변동\s*조정/,
+  /^WTO\s*고시금액/,
+  /^부정당업자\s*제재/,
+  /^낙찰하한율\(/,
+  /^협상\s*기간은/,
+  /^협상적격자\s*선정\s*기준/,
+  /^계약보증금\s*납부\s*원칙/,
+];
+
+function isRefWarning(text) {
+  return WARN_REF_PATTERNS.some(re => re.test(text));
 }
 
 /* ── 법령 개정 알림 배너 ── */
@@ -26,7 +43,6 @@ function renderAmendmentBanner(meta) {
   if (!lastChecked) { banner.style.display = 'none'; return; }
 
   if (alert) {
-    // 개정 감지된 법령 목록
     const changed = Object.values(versions)
       .filter(v => v.effectiveDate > (meta.lastUpdated || ''))
       .map(v => `<strong>${escHtml(v.label)}</strong> (시행일 ${escHtml(v.effectiveDate)})`)
@@ -81,6 +97,20 @@ function toKorean(n) {
   return result.trim() + '원';
 }
 
+/* ── 금액 구간 레이블 생성 ── */
+function getRangeLabel(rule) {
+  if (!rule) return '';
+  const min = rule.minAmount;
+  const max = rule.maxAmount;
+  if (min === 0 && max !== null) {
+    return `추정가격 ${toKorean(max)} 이하 구간`;
+  }
+  if (max === null) {
+    return `추정가격 ${toKorean(min)} 초과 구간`;
+  }
+  return `추정가격 ${toKorean(min)} 초과 ~ ${toKorean(max)} 이하 구간`;
+}
+
 /* ── Threshold Matcher ── */
 function findThreshold(data, key, amount) {
   const rules = data.thresholds[key];
@@ -88,6 +118,15 @@ function findThreshold(data, key, amount) {
   return rules.find(r =>
     amount >= r.minAmount && (r.maxAmount === null || amount <= r.maxAmount)
   ) || null;
+}
+
+/* ── 다음 카드로 부드럽게 스크롤 ── */
+function scrollToCard(cardId) {
+  const el = document.getElementById(cardId);
+  if (!el) return;
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
 }
 
 /* ── Renderer ── */
@@ -196,6 +235,21 @@ function closeLawModal() {
   document.body.style.overflow = '';
 }
 
+/* ── 용역 유형 미선택 안내 ── */
+function renderServiceGuide() {
+  const card = document.getElementById('resultCard');
+  const container = document.getElementById('result');
+  card.style.display = 'block';
+  container.innerHTML = `
+    <div class="service-guide">
+      <div class="service-guide-icon">☝️</div>
+      <div class="service-guide-text">
+        <strong>위에서 용역 유형을 먼저 선택해주세요.</strong><br>
+        <span>유형(일반용역 / 기술·IT / 학술·연구)에 따라 적용 법령과 계약방법이 달라집니다.</span>
+      </div>
+    </div>`;
+}
+
 function renderResult(rule) {
   const container = document.getElementById('result');
   if (!rule) {
@@ -229,17 +283,31 @@ function renderResult(rule) {
     </li>`;
   }).join('');
 
-  const warnHTML = rule.warnings.map(w =>
+  /* 주의사항 — 필수/참고 분리 */
+  const criticalWarns = rule.warnings.filter(w => !isRefWarning(w));
+  const refWarns      = rule.warnings.filter(w =>  isRefWarning(w));
+
+  const criticalHTML = criticalWarns.map(w =>
     `<li class="warning-item">${escHtml(w)}</li>`).join('');
+  const refHTML = refWarns.map(w =>
+    `<li class="warning-item warn-ref">${escHtml(w)}</li>`).join('');
+
+  const warnHTML = `
+    ${criticalHTML}
+    ${refHTML ? `
+      <li class="warning-separator">ℹ 참고 정보</li>
+      ${refHTML}` : ''}`;
 
   const excHTML = rule.exceptions.map(e =>
     `<div class="exception-item">${escHtml(e)}</div>`).join('');
 
   const badgeClass = rule.methodBadge || '경쟁입찰';
+  const rangeLabel = getRangeLabel(rule);
 
   container.innerHTML = `
     <div class="result-header">
       <div class="result-method">
+        <div class="result-range-badge">${escHtml(rangeLabel)}</div>
         <div class="result-method-label">계약방법</div>
         <div class="result-method-name">${escHtml(rule.contractMethod)}</div>
       </div>
@@ -272,6 +340,13 @@ function renderResult(rule) {
     <div class="action-btns">
       <button class="action-btn" id="printBtn">🖨 인쇄</button>
       <button class="action-btn" id="copyBtn">📋 클립보드 복사</button>
+    </div>
+
+    <div class="next-step-guide">
+      💡 다음 단계: 위 절차에 따라 품의서를 작성하고, 나라장터(G2B)에서 계약을 진행하세요.<br>
+      <a href="https://www.g2b.go.kr" target="_blank" rel="noopener">→ 나라장터(G2B) 바로가기</a>
+      &nbsp;|&nbsp;
+      <a href="https://www.law.go.kr" target="_blank" rel="noopener">→ 국가법령정보센터</a>
     </div>`;
 
   document.getElementById('excToggle').addEventListener('click', function () {
@@ -293,6 +368,7 @@ function buildCopyText(rule) {
   const lines = [
     `[계약방법 조회 결과]`,
     `계약방법: ${rule.contractMethod}`,
+    `구간: ${getRangeLabel(rule)}`,
     ``,
     `■ 근거 법령`,
     ...rule.legalBasis.map(b => `  • ${b.law} ${b.article}\n    ${b.summary}`),
@@ -345,8 +421,8 @@ function update() {
   const key = getThresholdKey();
 
   if (selectedCategory === 'service' && !selectedServiceType) {
-    document.getElementById('resultCard').style.display = 'none';
     renderRelatedLaws(null);
+    renderServiceGuide();
     return;
   }
 
@@ -378,6 +454,8 @@ function buildServiceSubGrid() {
       btn.classList.add('active');
       selectedServiceType = btn.dataset.subtype;
       update();
+      // 금액 입력 카드로 스크롤
+      scrollToCard('amountCard');
     });
   });
 }
@@ -399,7 +477,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.classList.add('active');
       selectedCategory = btn.dataset.category;
 
-      const subCard = document.getElementById('serviceSubCard');
+      const subCard  = document.getElementById('serviceSubCard');
       const stepLabel = document.getElementById('amountStepLabel');
 
       if (selectedCategory === 'service') {
@@ -407,10 +485,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectedServiceType = null;
         document.querySelectorAll('.subtype-btn').forEach(b => b.classList.remove('active'));
         stepLabel.textContent = 'STEP 3   추정가격 입력';
+        // 용역 유형 선택 카드로 스크롤
+        scrollToCard('serviceSubCard');
       } else {
         subCard.style.display = 'none';
         selectedServiceType = null;
         stepLabel.textContent = 'STEP 2   추정가격 입력';
+        // 금액 입력 카드로 스크롤
+        scrollToCard('amountCard');
       }
       update();
     });
@@ -431,6 +513,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       amountKorean.classList.remove('active');
     }
     update();
+    // 결과 카드로 스크롤 (금액 입력 후)
+    if (currentAmount > 0) scrollToCard('resultCard');
   });
 
   document.querySelectorAll('.quick-btn').forEach(btn => {

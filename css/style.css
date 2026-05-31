@@ -96,15 +96,23 @@ main {
 }
 
 .card-title {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--color-primary);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 16px;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* ── Step 안내 문구 ── */
+.step-guide {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
 }
 
 .card-title::before {
@@ -159,8 +167,45 @@ main {
   color: var(--color-text);
 }
 
+.category-desc {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  text-align: center;
+}
+
 .category-btn.active .category-label {
   color: var(--color-primary);
+}
+
+.category-btn.active .category-desc {
+  color: #3b82f6;
+}
+
+/* ── 추정가격 힌트 ── */
+.amount-hint {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  color: #78350f;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.amount-hint code {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 3px;
+  padding: 0 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  font-weight: 700;
+}
+.amount-hint em {
+  font-style: normal;
+  font-weight: 700;
+  color: #dc2626;
 }
 
 /* ── Amount Input ── */
@@ -215,11 +260,20 @@ main {
   font-weight: 500;
 }
 
+.quick-btns-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: 14px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .quick-btns {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
 }
 
 .quick-btn {
@@ -239,6 +293,27 @@ main {
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: var(--color-primary-bg);
+}
+
+/* 경계 금액 버튼 강조 */
+.quick-btn.threshold-btn {
+  border-color: #a78bfa;
+  background: #f5f3ff;
+  color: #6d28d9;
+  font-weight: 700;
+}
+.quick-btn.threshold-btn:hover {
+  border-color: #7c3aed;
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+/* 구간 경계 안내 메모 */
+.threshold-note {
+  font-size: 0.74rem;
+  color: #6d28d9;
+  margin-top: 8px;
+  padding-left: 2px;
 }
 
 /* ── Result ── */
@@ -263,6 +338,19 @@ main {
 
 .result-method {
   flex: 1;
+}
+
+/* 해당 구간 배지 */
+.result-range-badge {
+  display: inline-block;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .result-method-label {
@@ -521,11 +609,36 @@ a.proc-ref-link:hover {
   font-size: 0.88rem;
   color: #991b1b;
   padding: 4px 0;
+  border-bottom: 1px solid #fee2e2;
 }
+.warning-item:last-child { border-bottom: none; }
 
 .warning-item::before {
   content: '⚠';
   flex-shrink: 0;
+}
+
+/* 참고 정보형 주의사항 (파란 스타일) */
+.warning-item.warn-ref {
+  color: #1e40af;
+}
+.warning-item.warn-ref::before {
+  content: 'ℹ';
+  color: #3b82f6;
+}
+
+/* 경중 구분 구분선 */
+.warning-separator {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 0 2px;
+  border-top: 1px dashed #bfdbfe;
+  margin-top: 4px;
+  list-style: none;
+  display: block;
 }
 
 /* Exceptions */
@@ -586,6 +699,59 @@ a.proc-ref-link:hover {
   content: '✓';
   flex-shrink: 0;
   font-weight: 700;
+}
+
+/* ── 용역 유형 미선택 안내 ── */
+.service-guide {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  padding: 18px 16px;
+}
+.service-guide-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.service-guide-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+.service-guide-text strong {
+  color: var(--color-primary);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+.service-guide-text span {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* ── 다음 단계 안내 ── */
+.next-step-guide {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: #166534;
+  line-height: 1.7;
+}
+.next-step-guide a {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid #86efac;
+}
+.next-step-guide a:hover {
+  color: #166534;
+  border-bottom-color: #166534;
 }
 
 /* ── Action Buttons ── */
@@ -765,6 +931,11 @@ footer {
   .action-btns { flex-direction: column; }
   .amount-input { font-size: 1rem; }
   .result-method-name { font-size: 1.1rem; }
+  .category-btn { padding: 16px 12px; }
+  .category-desc { display: none; }  /* 모바일에서 카테고리 설명 숨김 — 공간 절약 */
+  .amount-hint { font-size: 0.78rem; }
+  .threshold-note { font-size: 0.7rem; }
+  .next-step-guide { font-size: 0.78rem; }
 }
 
 /* ── Related law clickable style ── */

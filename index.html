@@ -24,16 +24,19 @@
 <main>
 
   <!-- STEP 1: 계약 유형 -->
-  <div class="card">
+  <div class="card" id="step1Card">
     <div class="card-title">STEP 1 &nbsp; 계약 유형 선택</div>
+    <p class="step-guide">발주하려는 업무가 물품 구매인지, 용역 발주인지 선택하세요.</p>
     <div class="category-grid">
       <button class="category-btn active" data-category="goods">
         <span class="category-icon">📦</span>
         <span class="category-label">물품 구매</span>
+        <span class="category-desc">사무용품·장비·소모품 등 유형의 물건을 구입하는 경우</span>
       </button>
       <button class="category-btn" data-category="service">
         <span class="category-icon">🔧</span>
         <span class="category-label">용역 발주</span>
+        <span class="category-desc">청소·경비·IT·연구 등 사람이 수행하는 서비스를 발주하는 경우</span>
       </button>
     </div>
   </div>
@@ -41,18 +44,23 @@
   <!-- STEP 2: 용역 세부 유형 (용역 선택 시만 표시) -->
   <div class="card" id="serviceSubCard" style="display:none;">
     <div class="card-title">STEP 2 &nbsp; 용역 유형 선택</div>
+    <p class="step-guide">용역의 성격에 따라 적용 법령과 계약방법이 달라집니다. 가장 가까운 유형을 선택하세요.</p>
     <div class="subtype-grid" id="serviceSubGrid"></div>
   </div>
 
   <!-- STEP 2/3: 추정가격 입력 -->
-  <div class="card">
+  <div class="card" id="amountCard">
     <div class="card-title" id="amountStepLabel">STEP 2 &nbsp; 추정가격 입력</div>
+    <div class="amount-hint">
+      <strong>추정가격</strong>이란 부가세(VAT)를 <em>제외한</em> 예상 계약금액입니다.
+      <br>단위는 <strong>백만원</strong>입니다 &nbsp;→&nbsp; 예: 1천만원은 <code>10</code>, 5천만원은 <code>50</code>, 1억원은 <code>100</code>
+    </div>
     <div class="amount-input-wrap">
       <input
         type="number"
         id="amountInput"
         class="amount-input"
-        placeholder="금액을 입력하세요"
+        placeholder="백만원 단위로 입력 (예: 50 → 5천만원)"
         min="0"
         step="1"
         inputmode="numeric"
@@ -61,21 +69,25 @@
       <span class="amount-unit">백만원</span>
     </div>
     <div class="amount-korean" id="amountKorean"></div>
+    <div class="quick-btns-label">빠른 선택</div>
     <div class="quick-btns">
       <button class="quick-btn" data-amount="10">1천만원</button>
       <button class="quick-btn" data-amount="15">1,500만원</button>
+      <button class="quick-btn threshold-btn" data-amount="20" title="수의계약 1인 견적 상한">2천만원 ★</button>
       <button class="quick-btn" data-amount="30">3천만원</button>
-      <button class="quick-btn" data-amount="50">5천만원</button>
+      <button class="quick-btn threshold-btn" data-amount="50" title="수의계약 2인 견적 상한">5천만원 ★</button>
       <button class="quick-btn" data-amount="80">8천만원</button>
       <button class="quick-btn" data-amount="100">1억원</button>
+      <button class="quick-btn threshold-btn" data-amount="200" title="일반경쟁입찰 기준">2억원 ★</button>
       <button class="quick-btn" data-amount="300">3억원</button>
     </div>
+    <div class="threshold-note">★ 계약방법이 바뀌는 주요 금액 경계 (2천만 · 5천만 · 2억원)</div>
   </div>
 
   <!-- 관련 참고 법령 (용역 유형 선택 시 표시) -->
   <div class="card" id="relatedLawsCard" style="display:none;">
     <div class="card-title">📚 상황별 참고 법령</div>
-    <p class="related-laws-note">아래 법령은 용역 내용에 따라 추가로 적용될 수 있는 법령입니다. 참가자격 제한 조건 설정 시 반드시 확인하세요.</p>
+    <p class="related-laws-note">아래 법령은 용역 내용에 따라 추가로 적용될 수 있는 법령입니다. 참가자격 제한 조건 설정 시 반드시 확인하세요. 각 항목을 클릭하면 상세 내용을 확인할 수 있습니다.</p>
     <ul class="related-laws-list" id="relatedLawsList"></ul>
   </div>
 
@@ -88,8 +100,8 @@
 </main>
 
 <footer>
-  <div>국가를 당사자로 하는 계약에 관한 법률 기준 · 법령 개정 시 <strong>data/contracts.json</strong> 수정 필요</div>
-  <div class="footer-warning">⚠ 본 자료는 참고용이며, 실제 계약 처리 시 반드시 현행 법령(law.go.kr)을 확인하세요.</div>
+  <div>국가를 당사자로 하는 계약에 관한 법률 기준</div>
+  <div class="footer-warning">⚠ 본 자료는 참고용이며, 실제 계약 처리 시 반드시 현행 법령(<a href="https://www.law.go.kr" target="_blank" rel="noopener" style="color:inherit;">law.go.kr</a>)을 확인하세요.</div>
 </footer>
 
 <div class="toast" id="toast"></div>
