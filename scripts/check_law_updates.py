@@ -37,11 +37,12 @@ LAWS_TO_CHECK = [
         "label": "국가계약법 시행규칙",
         "url":   "https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙",
     },
-    # MAS 2단계경쟁 기준금액 근거 — 개정 시 contracts.json masRegulation.thresholds 수정 필요
+    # MAS 2단계경쟁 기준금액 근거 (물품 다수공급자계약 업무처리규정 제49조)
+    # 개정 감지 시 → contracts.json의 masRegulation.thresholds 및 goods_mas_* 구간 수동 확인 필요
     {
-        "key":   "MAS2단계경쟁기준",
-        "label": "물품 다수공급자계약 2단계경쟁 업무처리기준 (조달청)",
-        "url":   "https://www.law.go.kr/행정규칙/물품다수공급자계약2단계경쟁업무처리기준",
+        "key":   "MAS업무처리규정",
+        "label": "물품 다수공급자계약 업무처리규정 제49조 (조달청 훈령)",
+        "url":   "https://www.law.go.kr/행정규칙/물품다수공급자계약업무처리규정",
     },
 ]
 

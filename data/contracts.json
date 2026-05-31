@@ -23,17 +23,18 @@
     },
     "amendmentAlert": false,
     "masRegulation": {
-      "name": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-      "article": "제2조 (제안요청 기준)",
+      "name": "물품 다수공급자계약 업무처리규정 (조달청 훈령)",
+      "article": "제49조 (2단계경쟁 대상)",
       "authority": "조달청",
-      "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675",
+      "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242",
       "lastChecked": "2026-06-01",
       "thresholds": {
         "competition_product": 100000000,
         "sme_manufacture": 100000000,
         "other": 50000000
       },
-      "note": "법령 개정 시 thresholds 값을 수정하면 사이트 전체에 자동 반영됩니다."
+      "note": "법령 개정 시 thresholds 값을 수정하면 사이트 전체에 자동 반영됩니다.",
+      "admRulSeq": "2100000276242"
     }
   },
   "categories": [
@@ -1082,10 +1083,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
@@ -1132,10 +1133,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
@@ -1193,10 +1194,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
@@ -1244,10 +1245,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
@@ -1304,10 +1305,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
@@ -1354,10 +1355,10 @@
             "url": "https://www.law.go.kr/법령/조달사업에관한법률"
           },
           {
-            "law": "물품 다수공급자계약 2단계경쟁 업무처리기준",
-            "article": "제2조 (제안요청 기준)",
-            "summary": "2단계경쟁 의무 금액: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상",
-            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000187675"
+            "law": "물품 다수공급자계약 업무처리규정",
+            "article": "제49조 (2단계경쟁 대상)",
+            "summary": "2단계경쟁 기준: 중소기업자간 경쟁제품 1억원 이상 / 그 외 물품 5천만원 이상 (제49조①). 단, 비경쟁제품이고 중소기업이 제조하는 물품은 5천만원 이상~1억원 미만 면제 가능 (제49조④)",
+            "url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242"
           }
         ],
         "procedures": [
