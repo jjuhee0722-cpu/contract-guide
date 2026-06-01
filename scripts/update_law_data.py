@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 import urllib.parse
 from datetime import datetime, timezone
@@ -21,7 +22,13 @@ DATA_JSON = os.path.join(os.path.dirname(__file__), "..", "data", "contracts.jso
 DATA_JS   = os.path.join(os.path.dirname(__file__), "..", "data", "contracts.js")
 
 API_KEY  = os.environ.get("LAW_API_KEY", "").strip()
-DRF_BASE = "https://www.law.go.kr/DRF"
+
+# 법제처 API 엔드포인트 목록 (순서대로 시도)
+DRF_BASES = [
+    "https://www.law.go.kr/DRF",
+    "http://www.law.go.kr/DRF",
+]
+DRF_BASE = DRF_BASES[0]  # 기본값, api_get 내부에서 자동 폴백
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -165,18 +172,27 @@ def api_get(endpoint: str, params: dict) -> dict | None:
     params = dict(params)
     params["OC"]   = API_KEY
     params["type"] = "JSON"
-    url = f"{DRF_BASE}/{endpoint}?" + urllib.parse.urlencode(
-        params, quote_via=urllib.parse.quote
-    )
-    try:
-        req = urllib.request.Request(
-            url, headers={"User-Agent": "contract-guide-updater/2.0"}
-        )
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except Exception as exc:
-        print(f"  [ERROR] API 호출 실패 ({endpoint}): {exc}")
-        return None
+    query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+
+    for base in DRF_BASES:
+        url = f"{base}/{endpoint}?{query}"
+        for attempt in range(3):  # 최대 3회 재시도
+            try:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": "Mozilla/5.0 contract-guide-updater/2.0"}
+                )
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except Exception as exc:
+                wait = 2 ** attempt
+                print(f"  [WARN] API 호출 실패 (시도 {attempt+1}/3, {base}): {exc}")
+                if attempt < 2:
+                    print(f"  {wait}초 후 재시도...")
+                    time.sleep(wait)
+        print(f"  [SKIP] {base} 에서 모두 실패, 다음 엔드포인트 시도")
+
+    print(f"  [ERROR] 모든 엔드포인트 실패 ({endpoint})")
+    return None
 
 
 def search_law(query: str) -> dict | None:
