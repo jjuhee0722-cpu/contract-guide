@@ -15,6 +15,8 @@ const LAW_NAME_URL_MAP = {
   '조달청 고시': 'https://www.pps.go.kr',
   '업무처리기준': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
   '업무처리규정': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
+  '계약예규 "협상에 의한 계약체결기준"': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000272436',
+  '국고금관리법 시행령': 'https://www.law.go.kr/법령/국고금관리법시행령',
 };
 
 /**
@@ -44,9 +46,9 @@ function getProcRefUrl(ref) {
  * 예: "(시행령 제64조)" → 클릭 가능한 링크
  */
 function linkifyLawRefs(escapedText) {
-  // 괄호 안의 법령 참조: (시행령 제26조), (시행규칙 제44조) 등
+  // 괄호 안의 법령 참조: (시행령 제26조), (계약예규 "..." 제8조) 등
   return escapedText.replace(
-    /\(([^)]*?(시행규칙|시행령|본법|업무처리기준|업무처리규정|조달청 고시)[^)]*?)\)/g,
+    /\(([^)]*?(시행규칙|시행령|본법|업무처리기준|업무처리규정|조달청 고시|계약예규|국고금관리법)[^)]*?)\)/g,
     function(match, inner) {
       // 법령명 매칭
       let baseUrl = null;
