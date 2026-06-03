@@ -1377,6 +1377,399 @@ footer {
   color: #92400e;
 }
 
+/* ── 제안서평가 상세 안내 (RFP Guide) ── */
+.rfp-guide {
+  margin-top: 24px;
+  border: 2px solid #93c5fd;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+}
+
+.rfp-guide-header {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  color: #fff;
+  padding: 18px 20px;
+}
+
+.rfp-guide-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.rfp-guide-subtitle {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.rfp-section {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.rfp-section:last-child { border-bottom: none; }
+
+.rfp-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.rfp-desc {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.rfp-ref {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.rfp-ref a {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.rfp-ref a:hover { text-decoration: underline; }
+
+/* 평가유형 카드 그리드 */
+.eval-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.eval-type-card {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.eval-type-card.type-tech { border-color: #3b82f6; background: #eff6ff; }
+.eval-type-card.type-balance { border-color: #8b5cf6; background: #f5f3ff; }
+.eval-type-card.type-price { border-color: #f59e0b; background: #fffbeb; }
+
+.eval-type-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.type-tech .eval-type-name { color: #1d4ed8; }
+.type-balance .eval-type-name { color: #6d28d9; }
+.type-price .eval-type-name { color: #b45309; }
+
+.eval-type-ratio {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.eval-type-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.eval-type-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.type-tech .bar-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.type-balance .bar-fill { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.type-price .bar-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+.eval-type-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.eval-type-example {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* 배점 테이블 */
+.rfp-score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.rfp-score-table th {
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.rfp-score-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.score-group-label {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  font-weight: 700;
+  text-align: center;
+  vertical-align: middle;
+  border-right: 1px solid #e2e8f0;
+}
+
+.score-group-total {
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-primary);
+  border-left: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.score-note {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.rfp-score-price td {
+  background: #fefce8;
+}
+
+.rfp-score-total td {
+  background: #f0fdf4;
+  border-top: 2px solid var(--color-primary);
+}
+
+/* 정성 vs 정량 비교 */
+.eval-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.eval-compare-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.eval-compare-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.eval-compare-badge.qualitative {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.eval-compare-badge.quantitative {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.eval-compare-who {
+  font-size: 0.82rem;
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+
+.eval-compare-items {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.eval-compare-note {
+  font-size: 0.72rem;
+  color: #6b7280;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+  line-height: 1.5;
+}
+
+/* 차등점수제 */
+.diff-score-box {
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.diff-score-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.diff-score-step {
+  flex: 1;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.diff-step-num {
+  min-width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.diff-step-text {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.diff-score-arrow {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.diff-score-tip {
+  font-size: 0.8rem;
+  color: #78350f;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  line-height: 1.5;
+}
+
+/* 타임라인 */
+.rfp-timeline {
+  position: relative;
+  padding-left: 36px;
+}
+
+.rfp-timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #cbd5e1;
+}
+
+.tl-item {
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.tl-item:last-child { padding-bottom: 0; }
+
+.tl-marker {
+  position: absolute;
+  left: -36px;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  z-index: 1;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #cbd5e1;
+}
+
+.tl-item.tl-highlight .tl-marker {
+  background: #dc2626;
+  box-shadow: 0 0 0 2px #fca5a5;
+}
+
+.tl-content {
+  padding: 4px 0 4px 8px;
+}
+
+.tl-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.tl-item.tl-highlight .tl-title {
+  color: #dc2626;
+}
+
+.tl-detail {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  padding-left: 12px;
+  position: relative;
+}
+
+.tl-detail::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  font-weight: 700;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .eval-type-grid { grid-template-columns: 1fr; }
+  .eval-compare-grid { grid-template-columns: 1fr; }
+  .diff-score-flow { flex-direction: column; }
+  .diff-score-arrow { transform: rotate(90deg); }
+  .rfp-score-table { font-size: 0.78rem; }
+  .rfp-section { padding: 16px; }
+}
+
 /* ── Print ── */
 @media print {
   body { background: #fff; }

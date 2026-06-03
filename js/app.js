@@ -391,6 +391,212 @@ function renderGuide(icon, title, desc) {
     </div>`;
 }
 
+/* ── 제안서평가 상세 안내 (협상에 의한 계약 시 표시) ── */
+function buildRfpGuideHTML() {
+  const REF_URL = 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000272436';
+  return `
+  <div class="rfp-guide">
+    <div class="rfp-guide-header">
+      <div class="rfp-guide-title">📘 제안서평가 상세 안내</div>
+      <div class="rfp-guide-subtitle">계약예규 "협상에 의한 계약체결기준" 기준 · 초보자용 단계별 가이드</div>
+    </div>
+
+    <!-- ① 평가유형 선택 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">① 평가유형 선택 — 기술 vs 가격 비중을 먼저 결정</div>
+      <p class="rfp-desc">사업의 전문성·기술성 정도에 따라 3가지 유형 중 선택합니다. <strong>입찰공고 시 반드시 명시</strong>해야 합니다.</p>
+      <div class="eval-type-grid">
+        <div class="eval-type-card type-tech">
+          <div class="eval-type-name">기술강조형</div>
+          <div class="eval-type-ratio">기술 90 : 가격 10</div>
+          <div class="eval-type-bar"><div class="bar-fill" style="width:90%"></div></div>
+          <div class="eval-type-desc">고도의 전문성·기술성을 요하는 사업</div>
+          <div class="eval-type-example">예: 대규모 SI, 고난도 설계</div>
+        </div>
+        <div class="eval-type-card type-balance">
+          <div class="eval-type-name">기술·가격 균형형</div>
+          <div class="eval-type-ratio">기술 80~60 : 가격 20~40</div>
+          <div class="eval-type-bar"><div class="bar-fill" style="width:70%"></div></div>
+          <div class="eval-type-desc">일정 수준 이상의 전문성 필요</div>
+          <div class="eval-type-example">예: 일반 IT용역, 컨설팅</div>
+        </div>
+        <div class="eval-type-card type-price">
+          <div class="eval-type-name">가격중시형</div>
+          <div class="eval-type-ratio">기술 50 : 가격 50</div>
+          <div class="eval-type-bar"><div class="bar-fill" style="width:50%"></div></div>
+          <div class="eval-type-desc">전문성이 상대적으로 덜 중요</div>
+          <div class="eval-type-example">예: 단순 유지보수, 운영</div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 제7조 제2항, 별표 주4) / 기본 배점: 기술 70 : 가격 30 (20점 범위 내 가·감 조정 가능)</div>
+    </div>
+
+    <!-- ② 평가항목 및 배점한도 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">② 평가항목 및 배점한도</div>
+      <p class="rfp-desc">기술능력평가는 아래 항목으로 구성되며, <strong>각 항목은 30점을 초과할 수 없습니다.</strong></p>
+      <table class="rfp-score-table">
+        <thead>
+          <tr><th>구분</th><th>평가항목</th><th>배점한도</th></tr>
+        </thead>
+        <tbody>
+          <tr class="rfp-score-group">
+            <td rowspan="8" class="score-group-label">기술능력<br>평가</td>
+            <td>기술·지식능력</td>
+            <td rowspan="8" class="score-group-total">합계 70점<br><span class="score-note">(항목당 최대 30점)</span></td>
+          </tr>
+          <tr><td>인력·조직·관리기술</td></tr>
+          <tr><td>사업수행계획</td></tr>
+          <tr><td>지원기술·사후관리</td></tr>
+          <tr><td>수행실적</td></tr>
+          <tr><td>재무구조·경영상태</td></tr>
+          <tr><td>상호협력</td></tr>
+          <tr><td>외주근로자 근로조건·원가절감 적정성</td></tr>
+          <tr class="rfp-score-price">
+            <td>입찰가격 평가</td>
+            <td>입찰가격</td>
+            <td class="score-group-total">30점</td>
+          </tr>
+          <tr class="rfp-score-total">
+            <td colspan="2"><strong>합계</strong></td>
+            <td><strong>100점</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="rfp-ref">근거: 계약예규 제7조 제1항, 별표</div>
+    </div>
+
+    <!-- ③ 정성평가 vs 정량평가 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">③ 정성평가 vs 정량평가</div>
+      <p class="rfp-desc">기술능력 평가항목은 두 가지로 구분되며, <strong>평가 주체가 다릅니다.</strong></p>
+      <div class="eval-compare-grid">
+        <div class="eval-compare-card">
+          <div class="eval-compare-badge qualitative">정성평가</div>
+          <div class="eval-compare-who">평가: <strong>제안서평가위원회</strong></div>
+          <div class="eval-compare-items">
+            <div>• 기술·지식능력</div>
+            <div>• 사업수행계획</div>
+            <div>• 지원기술·사후관리</div>
+            <div>• 인력·조직·관리기술</div>
+          </div>
+          <div class="eval-compare-note">위원 개별 평가 후 평균 산출<br>위원 구성: 소속공무원 + 외부전문가</div>
+        </div>
+        <div class="eval-compare-card">
+          <div class="eval-compare-badge quantitative">정량평가</div>
+          <div class="eval-compare-who">평가: <strong>계약담당공무원</strong></div>
+          <div class="eval-compare-items">
+            <div>• 수행실적</div>
+            <div>• 재무구조·경영상태</div>
+            <div>• 상호협력 실적</div>
+          </div>
+          <div class="eval-compare-note">세부기준에 따른 정량 지표 산출<br>위원회 심의 불요</div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 제7조 제5항 단서, 제16조 제2항</div>
+    </div>
+
+    <!-- ④ 차등점수제 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">④ 차등점수제 (선택 적용)</div>
+      <p class="rfp-desc">기술능력평가의 <strong>변별력이 부족할 것으로 예상</strong>되는 경우 적용합니다. 입찰공고 시 적용 여부를 반드시 명시해야 합니다.</p>
+      <div class="diff-score-box">
+        <div class="diff-score-flow">
+          <div class="diff-score-step">
+            <div class="diff-step-num">1</div>
+            <div class="diff-step-text">제안서평가위원회가 기술능력을 평가하여 <strong>입찰자 순위</strong>를 결정</div>
+          </div>
+          <div class="diff-score-arrow">→</div>
+          <div class="diff-score-step">
+            <div class="diff-step-num">2</div>
+            <div class="diff-step-text">순위에 따라 <strong>고정 차등점수</strong>를 부여<br>(예: 1위 70점, 2위 67점, 3위 64점...)</div>
+          </div>
+          <div class="diff-score-arrow">→</div>
+          <div class="diff-score-step">
+            <div class="diff-step-num">3</div>
+            <div class="diff-step-text">차등점수 + 가격점수를 합산하여 <strong>최종 순위</strong> 결정</div>
+          </div>
+        </div>
+        <div class="diff-score-tip">💡 <strong>언제 사용?</strong> 동종사업 낙찰률이 비슷하거나, 참여업체 간 기술 수준 차이가 크지 않을 때 가격 경쟁력을 더 반영하기 위해 적용합니다.</div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 제7조 제6항·제7항</div>
+    </div>
+
+    <!-- ⑤ 전체 절차 타임라인 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">⑤ 제안서평가 → 협상 → 계약 전체 절차</div>
+      <div class="rfp-timeline">
+        <div class="tl-item">
+          <div class="tl-marker">1</div>
+          <div class="tl-content">
+            <div class="tl-title">입찰공고</div>
+            <div class="tl-detail">제안서 제출마감 40일 전 공고 (긴급·고시금액 미만 시 10일 전)</div>
+            <div class="tl-detail">평가유형·배점·차등점수제 적용 여부 명시 필수</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">2</div>
+          <div class="tl-content">
+            <div class="tl-title">제안요청서(RFP) 교부</div>
+            <div class="tl-detail">과업내용·요구사항·평가요소·평가방법 포함</div>
+            <div class="tl-detail">필요 시 제안요청 설명회 개최 가능</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">3</div>
+          <div class="tl-content">
+            <div class="tl-title">제안서 + 가격입찰서 접수</div>
+            <div class="tl-detail">제안서와 가격입찰서는 별도 작성·제출</div>
+            <div class="tl-detail">가격입찰서는 봉함하여 개봉 시까지 보관</div>
+          </div>
+        </div>
+        <div class="tl-item tl-highlight">
+          <div class="tl-marker">4</div>
+          <div class="tl-content">
+            <div class="tl-title">기술능력 평가 (제안서평가위원회)</div>
+            <div class="tl-detail">정성평가: 위원회 심의 (기술·수행계획 등)</div>
+            <div class="tl-detail">정량평가: 계약담당공무원 (실적·재무 등)</div>
+            <div class="tl-detail">평가 후 위원 명단·항목별 점수 공개 의무</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">5</div>
+          <div class="tl-content">
+            <div class="tl-title">가격입찰서 개봉 및 가격평가</div>
+            <div class="tl-detail">입찰참가자 참석 하에 봉함 개봉</div>
+            <div class="tl-detail">기준금액 미만 입찰 시 원가절감 적정성 심사 가능</div>
+          </div>
+        </div>
+        <div class="tl-item tl-highlight">
+          <div class="tl-marker">6</div>
+          <div class="tl-content">
+            <div class="tl-title">협상적격자 선정</div>
+            <div class="tl-detail"><strong>기술능력평가 점수 ≥ 배점한도의 85%</strong>인 자만 선정</div>
+            <div class="tl-detail">기술점수 + 가격점수 합산 고득점순으로 협상순위 결정</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">7</div>
+          <div class="tl-content">
+            <div class="tl-title">협상 진행</div>
+            <div class="tl-detail">우선순위자부터 순차 협상 (사업내용·이행방법·가격 협의)</div>
+            <div class="tl-detail">협상기간: 15일 이내 (5일 조정 + 10일 연장 가능)</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">8</div>
+          <div class="tl-content">
+            <div class="tl-title">계약 체결</div>
+            <div class="tl-detail">협상 성립 후 10일 이내 계약 체결 의무</div>
+            <div class="tl-detail">모든 협상적격자와 결렬 시 → 재공고입찰</div>
+          </div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 제4조~제15조 · <a href="${REF_URL}" target="_blank" rel="noopener">계약예규 전문 보기 ↗</a></div>
+    </div>
+  </div>`;
+}
+
 /* ── 결과 렌더 ── */
 function renderResult(rule, award, conditions) {
   const container = document.getElementById('result');
@@ -505,6 +711,8 @@ function renderResult(rule, award, conditions) {
       </button>
       <div class="exceptions-body" id="excBody">${excHTML}</div>
     </div>
+
+    ${(award && award.name && (award.name.includes('협상') || award.name.includes('RFP'))) ? buildRfpGuideHTML() : ''}
 
     <div class="action-btns">
       <button class="action-btn" id="printBtn">🖨 인쇄</button>
