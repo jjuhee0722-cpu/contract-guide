@@ -434,7 +434,7 @@ function buildRfpGuideHTML() {
     <!-- ② 평가항목 및 배점한도 -->
     <div class="rfp-section">
       <div class="rfp-section-title">② 평가항목 및 배점한도</div>
-      <p class="rfp-desc">기술능력평가는 아래 항목으로 구성되며, <strong>각 항목은 30점을 초과할 수 없습니다.</strong></p>
+      <p class="rfp-desc">기술능력평가는 아래 항목으로 구성됩니다. <strong>배점 규칙을 반드시 지켜야</strong> 합니다.</p>
       <table class="rfp-score-table">
         <thead>
           <tr><th>구분</th><th>평가항목</th><th>배점한도</th></tr>
@@ -463,7 +463,43 @@ function buildRfpGuideHTML() {
           </tr>
         </tbody>
       </table>
-      <div class="rfp-ref">근거: 계약예규 제7조 제1항, 별표</div>
+
+      <div class="score-rules-box">
+        <div class="score-rules-title">📐 배점 세부 규칙</div>
+        <div class="score-rule-grid">
+          <div class="score-rule-item">
+            <div class="score-rule-label">평가항목별 배점한도</div>
+            <div class="score-rule-value">각 항목 <strong>최대 30점</strong></div>
+            <div class="score-rule-note">하도급 평가항목은 5점 이상 필수</div>
+          </div>
+          <div class="score-rule-item">
+            <div class="score-rule-label">정량평가 총 배점한도</div>
+            <div class="score-rule-value">합계 <strong>최대 20점</strong></div>
+            <div class="score-rule-note">수행실적·경영상태·상생협력 등</div>
+          </div>
+          <div class="score-rule-item">
+            <div class="score-rule-label">세부평가항목 등급</div>
+            <div class="score-rule-value"><strong>최고 5등급</strong> 기준 평가</div>
+            <div class="score-rule-note">우열 판별 불가 시 동점 부여 가능</div>
+          </div>
+          <div class="score-rule-item">
+            <div class="score-rule-label">평점구간 제한</div>
+            <div class="score-rule-value">최고-최저 차이 <strong>배점의 30% 이내</strong></div>
+            <div class="score-rule-note">상생협력 등 일부 항목은 예외</div>
+          </div>
+          <div class="score-rule-item">
+            <div class="score-rule-label">10점 초과 항목</div>
+            <div class="score-rule-value">세부평가항목 <strong>2개 이상</strong> 구성</div>
+            <div class="score-rule-note">수요기관이 세부항목 설정</div>
+          </div>
+          <div class="score-rule-item">
+            <div class="score-rule-label">평가점수 산출</div>
+            <div class="score-rule-value">위원 점수 중 <strong>최고·최저 제외</strong> 후 평균</div>
+            <div class="score-rule-note">12명 이상 시 상·하위 각 2개 제외</div>
+          </div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 제7조 제1항·별표 / 조달청 세부기준 제9조 제4항·제5항·제8항, 제12조</div>
     </div>
 
     <!-- ③ 정성평가 vs 정량평가 -->
@@ -499,17 +535,22 @@ function buildRfpGuideHTML() {
     <!-- ④ 차등점수제 -->
     <div class="rfp-section">
       <div class="rfp-section-title">④ 차등점수제 (선택 적용)</div>
-      <p class="rfp-desc">기술능력평가의 <strong>변별력이 부족할 것으로 예상</strong>되는 경우 적용합니다. 입찰공고 시 적용 여부를 반드시 명시해야 합니다.</p>
+      <p class="rfp-desc">기술능력평가의 <strong>변별력이 부족할 것으로 예상</strong>되는 경우 적용합니다. 입찰공고 시 적용 여부와 순위간 점수차를 <strong>반드시 명시</strong>해야 합니다.</p>
       <div class="diff-score-box">
+        <div class="diff-score-key">
+          <div class="diff-key-label">핵심 규칙</div>
+          <div class="diff-key-value">순위간 점수차: <strong>3점 이내</strong>에서 지정</div>
+        </div>
         <div class="diff-score-flow">
           <div class="diff-score-step">
             <div class="diff-step-num">1</div>
-            <div class="diff-step-text">제안서평가위원회가 기술능력을 평가하여 <strong>입찰자 순위</strong>를 결정</div>
+            <div class="diff-step-text">제안서평가위원회가 기술능력을 평가하여 <strong>원 기술능력평가점수</strong>로 순위 결정</div>
           </div>
           <div class="diff-score-arrow">→</div>
           <div class="diff-score-step">
             <div class="diff-step-num">2</div>
-            <div class="diff-step-text">순위에 따라 <strong>고정 차등점수</strong>를 부여<br>(예: 1위 70점, 2위 67점, 3위 64점...)</div>
+            <div class="diff-step-text">순위에 따라 <strong>3점 이내 간격</strong>의 차등점수 부여<br>
+              <span class="diff-example">예: 기술배점 70점 기준<br>1위 70점, 2위 67점, 3위 64점, 4위 61점...</span></div>
           </div>
           <div class="diff-score-arrow">→</div>
           <div class="diff-score-step">
@@ -517,9 +558,14 @@ function buildRfpGuideHTML() {
             <div class="diff-step-text">차등점수 + 가격점수를 합산하여 <strong>최종 순위</strong> 결정</div>
           </div>
         </div>
-        <div class="diff-score-tip">💡 <strong>언제 사용?</strong> 동종사업 낙찰률이 비슷하거나, 참여업체 간 기술 수준 차이가 크지 않을 때 가격 경쟁력을 더 반영하기 위해 적용합니다.</div>
+        <div class="diff-score-caution">
+          <div class="diff-caution-item">⚠ <strong>협상적격자(85%) 판단</strong>은 차등점수가 아닌 <strong>원 기술능력평가점수</strong> 기준으로 판단합니다.</div>
+          <div class="diff-caution-item">⚠ 차등점수제와 <strong>원가절감 적정성 평가</strong>는 <strong>중복 적용 불가</strong>합니다.</div>
+          <div class="diff-caution-item">⚠ 적용하지 않으려면 조달요청 시 <strong>미적용 사유를 명시</strong>해야 합니다.</div>
+        </div>
+        <div class="diff-score-tip">💡 <strong>언제 사용?</strong> 동종사업 낙찰률이 비슷하거나 참여업체 간 기술 수준 차이가 크지 않을 때, 가격 경쟁력을 더 반영하기 위해 적용합니다. 조달청 집행 사업의 경우 수요기관이 조달요청 시 점수차를 지정합니다.</div>
       </div>
-      <div class="rfp-ref">근거: 계약예규 제7조 제6항·제7항</div>
+      <div class="rfp-ref">근거: 계약예규 제7조 제6항·제7항 / 조달청 세부기준 제9조 제10항, 제12조 제3항·제5항</div>
     </div>
 
     <!-- ⑤ 전체 절차 타임라인 -->
