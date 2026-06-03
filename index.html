@@ -13,13 +13,24 @@
   <div class="header-inner">
     <div class="header-title">
       국가기관 계약방법 조회
-      <span>물품구매 · 용역발주 계약유형 및 법령 안내</span>
+      <span>물품구매 · 용역발주 계약유형·낙찰방법·절차 안내</span>
     </div>
     <div class="header-badge" id="lastUpdated">국가계약법 기준</div>
   </div>
 </header>
 
 <div class="amendment-banner" id="amendmentBanner" style="display:none;"></div>
+
+<!-- 진행 표시 -->
+<div class="progress-bar-wrap" id="progressBar">
+  <div class="progress-inner">
+    <div class="progress-step active" data-step="1"><span class="pnum">1</span><span class="plabel">계약유형</span></div>
+    <div class="progress-step" data-step="2"><span class="pnum">2</span><span class="plabel">세부유형</span></div>
+    <div class="progress-step" data-step="3"><span class="pnum">3</span><span class="plabel">추정가격</span></div>
+    <div class="progress-step" data-step="4"><span class="pnum">4</span><span class="plabel">특수조건</span></div>
+    <div class="progress-step" data-step="R"><span class="pnum">✓</span><span class="plabel">결과</span></div>
+  </div>
+</div>
 
 <main>
 
@@ -41,16 +52,16 @@
     </div>
   </div>
 
-  <!-- STEP 2 (물품): 구매 방식 선택 -->
+  <!-- STEP 2 (물품): MAS 이용 가능 여부 -->
   <div class="card" id="goodsMethodCard" style="display:none;">
-    <div class="card-title">STEP 2 &nbsp; 구매 방식 선택</div>
+    <div class="card-title">STEP 2 &nbsp; MAS(나라장터 종합쇼핑몰) 이용 가능 여부</div>
     <p class="step-guide">나라장터 종합쇼핑몰(MAS)에 등록된 물품이면 별도 입찰 없이 쇼핑몰에서 구매할 수 있습니다. 해당 여부를 먼저 확인하세요.</p>
     <div class="subtype-grid" id="goodsMethodGrid"></div>
   </div>
 
-  <!-- STEP 2-2 (MAS): 물품 유형 선택 (MAS 선택 시만 표시) -->
+  <!-- STEP 2-1 (MAS): 물품 유형 선택 -->
   <div class="card" id="masProductCard" style="display:none;">
-    <div class="card-title">STEP 2-2 &nbsp; 물품 유형 선택</div>
+    <div class="card-title">STEP 2-1 &nbsp; 물품 유형 선택</div>
     <p class="step-guide">물품 유형에 따라 2단계경쟁 적용 기준금액이 다릅니다. 해당 물품이 어느 유형인지 선택하세요.<br>
       <span class="step-guide-sub">※ 근거: 물품 다수공급자계약 2단계경쟁 업무처리기준 제2조</span>
     </p>
@@ -99,7 +110,7 @@
       <span class="amount-unit">백만원</span>
     </div>
     <div class="amount-korean" id="amountKorean"></div>
-    <div class="quick-btns-label">빠른 선택 <span class="quick-btns-sublabel">(클릭 시 바로 조회)</span></div>
+    <div class="quick-btns-label">빠른 선택 <span class="quick-btns-sublabel">(클릭 시 금액 입력)</span></div>
     <div class="quick-btns">
       <button class="quick-btn" data-amount="10">1천만원</button>
       <button class="quick-btn" data-amount="15">1,500만원</button>
@@ -112,7 +123,56 @@
       <button class="quick-btn" data-amount="300">3억원</button>
     </div>
     <div class="threshold-note">★ 계약방법이 바뀌는 주요 금액 경계 (2천만 · 5천만 · 2억원)</div>
-    <button class="submit-btn" id="submitBtn">🔍 계약방법 조회하기</button>
+    <button class="submit-btn" id="toStep4Btn">다음 → 특수조건 확인</button>
+  </div>
+
+  <!-- STEP 4: 특수 조건 확인 -->
+  <div class="card" id="specialCondCard" style="display:none;">
+    <div class="card-title">STEP 4 &nbsp; 특수 조건 확인</div>
+    <p class="step-guide">아래 해당 사항이 있으면 체크하세요. 계약방법과 낙찰방법에 영향을 줍니다.<br>해당사항이 없으면 <strong>"해당 없음"</strong>을 선택하세요.</p>
+
+    <!-- 물품 특수조건 -->
+    <div class="special-cond-group" id="goodsSpecialConds">
+      <label class="cond-check">
+        <input type="checkbox" name="goodsCond" value="sole_source">
+        <span class="cond-text">특정인의 기술·특허·상표 등으로 대체 불가한 물품</span>
+        <span class="cond-ref">시행령 제26조 제1항 제3호</span>
+      </label>
+      <label class="cond-check">
+        <input type="checkbox" name="goodsCond" value="emergency">
+        <span class="cond-text">긴급 조달 필요 (재해·안보 등)</span>
+        <span class="cond-ref">시행령 제26조 제1항 제1호</span>
+      </label>
+      <label class="cond-check cond-none">
+        <input type="checkbox" name="goodsCond" value="none">
+        <span class="cond-text">해당 없음</span>
+      </label>
+    </div>
+
+    <!-- 용역 특수조건 -->
+    <div class="special-cond-group" id="serviceSpecialConds" style="display:none;">
+      <label class="cond-check">
+        <input type="checkbox" name="serviceCond" value="tech_proposal">
+        <span class="cond-text">전문적 기술·기법 평가 필요 (기술제안서 비교 평가가 적합한 경우)</span>
+        <span class="cond-ref">시행령 제43조</span>
+      </label>
+      <label class="cond-check">
+        <input type="checkbox" name="serviceCond" value="complex_large">
+        <span class="cond-text">기술사양을 사전에 확정하기 어려운 복잡한 대형사업</span>
+        <span class="cond-ref">시행령 제43조의2</span>
+      </label>
+      <label class="cond-check">
+        <input type="checkbox" name="serviceCond" value="small_biz">
+        <span class="cond-text">소기업·소상공인 해당 여부</span>
+        <span class="cond-ref">중소기업기본법 제2조</span>
+      </label>
+      <label class="cond-check cond-none">
+        <input type="checkbox" name="serviceCond" value="none">
+        <span class="cond-text">해당 없음</span>
+      </label>
+    </div>
+
+    <button class="submit-btn" id="submitBtn">🔍 계약방법 · 낙찰방법 조회하기</button>
   </div>
 
   <!-- 관련 참고 법령 (용역 유형 선택 시 표시) -->
@@ -120,6 +180,22 @@
     <div class="card-title">📚 상황별 참고 법령</div>
     <p class="related-laws-note">아래 법령은 용역 내용에 따라 추가로 적용될 수 있는 법령입니다. 참가자격 제한 조건 설정 시 반드시 확인하세요. 각 항목을 클릭하면 상세 내용을 확인할 수 있습니다.</p>
     <ul class="related-laws-list" id="relatedLawsList"></ul>
+  </div>
+
+  <!-- WTO 경고 배너 -->
+  <div class="wto-warning-banner" id="wtoBanner" style="display:none;">
+    <div class="wto-icon">🌐</div>
+    <div class="wto-content">
+      <div class="wto-title">WTO 정부조달협정 적용 대상</div>
+      <div class="wto-body">
+        <ul>
+          <li>중소기업 제한경쟁 <strong>불가</strong></li>
+          <li>국제입찰 공고기간 <strong>40일 이상</strong></li>
+          <li><strong>영문 공고</strong> 병행 필요</li>
+        </ul>
+        <div class="wto-ref">근거: 국가계약법 제4조, 시행령 제4조 / 고시금액 약 2억 3천만원 (중앙행정기관, 2025~2026)</div>
+      </div>
+    </div>
   </div>
 
   <!-- 결과 -->

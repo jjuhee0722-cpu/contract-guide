@@ -119,7 +119,131 @@ function scrollToCard(cardId) {
   setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
 }
 
-/* ── Renderer ── */
+/* ── Progress Bar ── */
+function updateProgress(activeStep) {
+  const steps = document.querySelectorAll('.progress-step');
+  const order = ['1', '2', '3', '4', 'R'];
+  const activeIdx = order.indexOf(String(activeStep));
+  steps.forEach(s => {
+    const idx = order.indexOf(s.dataset.step);
+    s.classList.remove('active', 'done');
+    if (idx < activeIdx) s.classList.add('done');
+    else if (idx === activeIdx) s.classList.add('active');
+  });
+}
+
+/* ── 특수조건 체크박스 값 가져오기 ── */
+function getSpecialConditions() {
+  const isGoods = selectedCategory === 'goods';
+  const name = isGoods ? 'goodsCond' : 'serviceCond';
+  const checked = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+    .map(cb => cb.value);
+  if (checked.includes('none')) return ['none'];
+  return checked;
+}
+
+/* ── WTO 고시금액 (중앙행정기관 기준) ── */
+const WTO_THRESHOLD = 230000000;
+
+/* ── 낙찰방법 결정 로직 ── */
+function determineAwardMethod(rule, amount, conditions, category, serviceType) {
+  const isMas = rule && rule.methodBadge === 'MAS';
+
+  if (conditions.includes('sole_source')) {
+    return {
+      name: '수의계약 (특수조건 — 특정인 기술·특허)',
+      ref: '시행령 제26조 제1항 제3호',
+      override: true,
+      condLabel: '특정인의 기술·특허·상표 등으로 대체 불가'
+    };
+  }
+  if (conditions.includes('emergency')) {
+    return {
+      name: '수의계약 (긴급 조달)',
+      ref: '시행령 제26조 제1항 제1호',
+      override: true,
+      condLabel: '긴급 조달 필요 (재해·안보 등)'
+    };
+  }
+
+  if (amount <= 20000000) {
+    return {
+      name: '소액수의계약',
+      ref: '시행령 제26조 제1항 제5호'
+    };
+  }
+
+  if (isMas) {
+    const isOver = rule.contractMethod.includes('2단계경쟁');
+    return {
+      name: isOver ? 'MAS 2단계경쟁' : 'MAS 직접구매 (2단계경쟁 면제)',
+      ref: '물품 다수공급자계약 2단계경쟁 업무처리기준 제2조'
+    };
+  }
+
+  if (category === 'service') {
+    const isTech = serviceType === 'service_tech';
+    const isResearch = serviceType === 'service_research' || serviceType === 'service_academic';
+    const hasTechProposal = conditions.includes('tech_proposal');
+    const hasComplexLarge = conditions.includes('complex_large');
+
+    if (isTech || hasTechProposal) {
+      if (amount > WTO_THRESHOLD) {
+        return {
+          name: '협상에 의한 계약(RFP) — 일반경쟁',
+          ref: '시행령 제43조, 제7조',
+          wto: true
+        };
+      }
+      if (amount > 50000000) {
+        return {
+          name: '협상에 의한 계약(RFP) 또는 제한경쟁입찰',
+          ref: '시행령 제43조',
+          smeNote: amount <= WTO_THRESHOLD
+        };
+      }
+    }
+
+    if (hasComplexLarge && amount > 50000000) {
+      return {
+        name: '대안입찰 또는 일괄입찰',
+        ref: '시행령 제43조의2',
+        smeNote: amount <= WTO_THRESHOLD
+      };
+    }
+
+    if (isResearch && amount > 20000000) {
+      return {
+        name: '협상에 의한 계약(제안요청) 또는 학술연구 특례 수의계약',
+        ref: '시행령 제43조, 제26조 제1항 제3호',
+        smeNote: amount > 50000000 && amount <= WTO_THRESHOLD
+      };
+    }
+  }
+
+  if (amount > WTO_THRESHOLD) {
+    return {
+      name: '적격심사 (일반경쟁입찰)',
+      ref: '시행령 제42조, 적격심사기준 고시',
+      wto: true
+    };
+  }
+
+  if (amount > 50000000) {
+    return {
+      name: '적격심사 (제한경쟁 가능)',
+      ref: '시행령 제42조, 적격심사기준 고시',
+      smeNote: true
+    };
+  }
+
+  return {
+    name: '적격심사 또는 최저가낙찰',
+    ref: '시행령 제42조'
+  };
+}
+
+/* ── Renderer: Related Laws ── */
 function renderRelatedLaws(serviceTypeId) {
   const sec = document.getElementById('relatedLawsCard');
   if (!sec) return;
@@ -206,7 +330,7 @@ function renderGuide(icon, title, desc) {
 }
 
 /* ── 결과 렌더 ── */
-function renderResult(rule) {
+function renderResult(rule, award, conditions) {
   const container = document.getElementById('result');
   if (!rule) {
     container.innerHTML = `
@@ -249,13 +373,35 @@ function renderResult(rule) {
   const badgeClass = rule.methodBadge || '경쟁입찰';
   const rangeLabel = getRangeLabel(rule);
 
-  // G2B 링크: MAS면 쇼핑몰, 아니면 일반 G2B
   const isMas = (rule.methodBadge === 'MAS');
   const g2bLink = isMas
     ? `<a href="https://shopping.g2b.go.kr" target="_blank" rel="noopener">→ 나라장터 종합쇼핑몰 바로가기</a>`
     : `<a href="https://www.g2b.go.kr" target="_blank" rel="noopener">→ 나라장터(G2B) 바로가기</a>`;
 
+  let awardHTML = '';
+  if (award) {
+    let smeHTML = '';
+    if (award.smeNote) {
+      smeHTML = `<div class="sme-info-box"><strong>💡 중소기업자간 제한경쟁</strong> 가능 — 중소기업 제품 구매 촉진에 관한 법률에 따라 중소기업자간 제한경쟁을 적용할 수 있습니다.</div>`;
+    }
+    awardHTML = `
+      <div class="award-method-section">
+        <div class="award-method-label">낙찰자 결정방법</div>
+        <div class="award-method-name">${escHtml(award.name)}</div>
+        <div class="award-method-ref">근거: ${escHtml(award.ref)}</div>
+        ${smeHTML}
+      </div>`;
+  }
+
+  let condAppliedHTML = '';
+  if (award && award.override && award.condLabel) {
+    condAppliedHTML = `<div class="special-cond-applied"><strong>⚡ 특수조건 적용:</strong> ${escHtml(award.condLabel)} → 금액과 무관하게 수의계약이 적용됩니다.</div>`;
+  }
+
   container.innerHTML = `
+    ${condAppliedHTML}
+    ${awardHTML}
+
     <div class="result-header">
       <div class="result-method">
         <div class="result-range-badge">${escHtml(rangeLabel)}</div>
@@ -291,6 +437,7 @@ function renderResult(rule) {
     <div class="action-btns">
       <button class="action-btn" id="printBtn">🖨 인쇄</button>
       <button class="action-btn" id="copyBtn">📋 클립보드 복사</button>
+      <button class="action-btn" id="resetBtn">🔄 처음부터</button>
     </div>
 
     <div class="next-step-guide">
@@ -308,17 +455,27 @@ function renderResult(rule) {
   });
   document.getElementById('printBtn').addEventListener('click', () => window.print());
   document.getElementById('copyBtn').addEventListener('click', () => {
-    navigator.clipboard.writeText(buildCopyText(rule))
+    navigator.clipboard.writeText(buildCopyText(rule, award))
       .then(() => showToast('클립보드에 복사되었습니다.'))
       .catch(() => showToast('복사 실패 — 브라우저 권한을 확인하세요.'));
   });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    resetAll();
+  });
 }
 
-function buildCopyText(rule) {
+function buildCopyText(rule, award) {
   const lines = [
     `[계약방법 조회 결과]`,
     `계약방법: ${rule.contractMethod}`,
     `구간: ${getRangeLabel(rule)}`,
+  ];
+  if (award) {
+    lines.push(`낙찰자 결정방법: ${award.name}`);
+    lines.push(`낙찰 근거: ${award.ref}`);
+  }
+  lines.push(
     ``,
     `■ 근거 법령`,
     ...rule.legalBasis.map(b => `  • ${b.law} ${b.article}\n    ${b.summary}`),
@@ -331,7 +488,7 @@ function buildCopyText(rule) {
     ``,
     `■ 예외사항`,
     ...rule.exceptions.map(e => `  ✓ ${e}`),
-  ];
+  );
   return lines.join('\n');
 }
 
@@ -353,64 +510,124 @@ function escHtml(str) {
 /* ── App State ── */
 let appData             = null;
 let selectedCategory    = 'goods';
-let selectedGoodsMethod = null;    // 'goods' | 'goods_mas'
-let selectedMasProduct  = null;    // 'goods_mas_competition' | 'goods_mas_sme' | 'goods_mas_other'
-let selectedServiceType = null;    // 'service_general' | 'service_tech' | 'service_research'
+let selectedGoodsMethod = null;
+let selectedMasProduct  = null;
+let selectedServiceType = null;
 let currentAmount       = 0;
 
 function getThresholdKey() {
   if (selectedCategory === 'goods') {
     if (selectedGoodsMethod === 'goods_mas') return selectedMasProduct || null;
-    return selectedGoodsMethod || null;  // 'goods' or null
+    return selectedGoodsMethod || null;
   }
   if (selectedCategory === 'service') return selectedServiceType || null;
   return null;
 }
 
-/* ── 조회 실행 (확인 버튼 클릭 / 빠른선택 버튼 클릭 시 호출) ── */
-function submitQuery() {
-  if (!appData) return;
-  const key = getThresholdKey();
+/* ── 전체 초기화 ── */
+function resetAll() {
+  selectedGoodsMethod = null;
+  selectedMasProduct  = null;
+  selectedServiceType = null;
+  currentAmount       = 0;
 
-  // 물품인데 구매방식 미선택
-  if (selectedCategory === 'goods' && !selectedGoodsMethod) {
-    renderGuide('☝️', 'STEP 2에서 구매방식을 먼저 선택해주세요.',
-      '일반 구매(입찰/수의계약)인지, 나라장터 쇼핑몰(MAS) 구매인지 선택하면 절차를 안내해 드립니다.');
-    scrollToCard('goodsMethodCard');
-    return;
+  document.getElementById('amountInput').value = '';
+  document.getElementById('amountKorean').textContent = '';
+  document.getElementById('amountKorean').classList.remove('active');
+
+  document.getElementById('masProductCard').style.display = 'none';
+  document.getElementById('specialCondCard').style.display = 'none';
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('relatedLawsCard').style.display = 'none';
+  document.getElementById('wtoBanner').style.display = 'none';
+
+  document.querySelectorAll('.subtype-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('input[name="goodsCond"], input[name="serviceCond"]').forEach(cb => cb.checked = false);
+
+  if (selectedCategory === 'goods') {
+    document.getElementById('goodsMethodCard').style.display = 'block';
+    document.getElementById('serviceSubCard').style.display = 'none';
+  } else {
+    document.getElementById('goodsMethodCard').style.display = 'none';
+    document.getElementById('serviceSubCard').style.display = 'block';
   }
 
-  // MAS인데 물품유형 미선택
-  if (selectedCategory === 'goods' && selectedGoodsMethod === 'goods_mas' && !selectedMasProduct) {
-    renderGuide('☝️', 'STEP 2-2에서 물품 유형을 먼저 선택해주세요.',
-      '중소기업자간 경쟁제품 / 중소기업 제조물품 / 그 외 물품에 따라 2단계경쟁 적용 기준이 다릅니다.');
-    scrollToCard('masProductCard');
-    return;
-  }
+  updateProgress(1);
+}
 
-  // 용역인데 유형 미선택
-  if (selectedCategory === 'service' && !selectedServiceType) {
-    renderGuide('☝️', 'STEP 2에서 용역 유형을 먼저 선택해주세요.',
-      '일반용역 / 기술·IT / 학술·연구 중 해당 유형을 선택하면 계약방법을 안내해 드립니다.');
-    scrollToCard('serviceSubCard');
-    return;
-  }
-
-  // 금액 미입력
+/* ── STEP 4 표시 ── */
+function showStep4() {
   if (!currentAmount || currentAmount <= 0) {
     showToast('추정가격을 입력해주세요.');
     document.getElementById('amountInput').focus();
     return;
   }
 
-  // 관련 법령 표시 (서비스만)
+  const key = getThresholdKey();
+  if (selectedCategory === 'goods' && !selectedGoodsMethod) {
+    showToast('STEP 2에서 구매방식을 먼저 선택해주세요.');
+    scrollToCard('goodsMethodCard');
+    return;
+  }
+  if (selectedCategory === 'goods' && selectedGoodsMethod === 'goods_mas' && !selectedMasProduct) {
+    showToast('STEP 2-1에서 물품 유형을 먼저 선택해주세요.');
+    scrollToCard('masProductCard');
+    return;
+  }
+  if (selectedCategory === 'service' && !selectedServiceType) {
+    showToast('STEP 2에서 용역 유형을 먼저 선택해주세요.');
+    scrollToCard('serviceSubCard');
+    return;
+  }
+
+  const condCard = document.getElementById('specialCondCard');
+  const goodsConds = document.getElementById('goodsSpecialConds');
+  const serviceConds = document.getElementById('serviceSpecialConds');
+
+  if (selectedCategory === 'goods') {
+    goodsConds.style.display = 'flex';
+    serviceConds.style.display = 'none';
+  } else {
+    goodsConds.style.display = 'none';
+    serviceConds.style.display = 'flex';
+  }
+
+  document.querySelectorAll('input[name="goodsCond"], input[name="serviceCond"]').forEach(cb => cb.checked = false);
+  condCard.style.display = 'block';
+  updateProgress(4);
+  scrollToCard('specialCondCard');
+}
+
+/* ── 조회 실행 ── */
+function submitQuery() {
+  if (!appData) return;
+
+  const conditions = getSpecialConditions();
+  if (conditions.length === 0) {
+    showToast('특수조건을 확인해주세요. 해당 없으면 "해당 없음"을 선택하세요.');
+    return;
+  }
+
+  const key = getThresholdKey();
+
   renderRelatedLaws(selectedCategory === 'service' ? selectedServiceType : null);
 
-  // 결과 표시
   const rule = findThreshold(appData, key, currentAmount);
+
+  const award = determineAwardMethod(
+    rule, currentAmount, conditions, selectedCategory, selectedServiceType
+  );
+
+  const showWto = award && award.wto;
+  document.getElementById('wtoBanner').style.display = showWto ? 'flex' : 'none';
+  if (showWto && currentAmount >= WTO_THRESHOLD) {
+    document.getElementById('wtoBanner').style.display = 'flex';
+  }
+
   document.getElementById('resultCard').style.display = 'block';
-  renderResult(rule);
-  scrollToCard('resultCard');
+  renderResult(rule, award, conditions);
+  updateProgress('R');
+  scrollToCard(showWto ? 'wtoBanner' : 'resultCard');
 }
 
 /* ── 물품 구매방식 그리드 구성 ── */
@@ -434,12 +651,13 @@ function buildGoodsMethodGrid() {
       const masCard = document.getElementById('masProductCard');
       if (selectedGoodsMethod === 'goods_mas') {
         masCard.style.display = 'block';
-        // masProduct 버튼 초기화
         document.querySelectorAll('#masProductGrid .subtype-btn')
           .forEach(b => b.classList.remove('active'));
+        updateProgress(2);
         scrollToCard('masProductCard');
       } else {
         masCard.style.display = 'none';
+        updateProgress(3);
         scrollToCard('amountCard');
       }
     });
@@ -462,6 +680,7 @@ function buildMasProductGrid() {
       grid.querySelectorAll('.subtype-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       selectedMasProduct = btn.dataset.product;
+      updateProgress(3);
       scrollToCard('amountCard');
     });
   });
@@ -483,7 +702,27 @@ function buildServiceSubGrid() {
       grid.querySelectorAll('.subtype-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       selectedServiceType = btn.dataset.subtype;
+      updateProgress(3);
       scrollToCard('amountCard');
+    });
+  });
+}
+
+/* ── 특수조건 체크박스 "해당 없음" 상호 배타 로직 ── */
+function setupConditionCheckboxes() {
+  ['goodsCond', 'serviceCond'].forEach(name => {
+    const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.value === 'none' && cb.checked) {
+          checkboxes.forEach(other => {
+            if (other !== cb) other.checked = false;
+          });
+        } else if (cb.value !== 'none' && cb.checked) {
+          const noneBox = document.querySelector(`input[name="${name}"][value="none"]`);
+          if (noneBox) noneBox.checked = false;
+        }
+      });
     });
   });
 }
@@ -511,12 +750,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const masCard     = document.getElementById('masProductCard');
       const serviceCard = document.getElementById('serviceSubCard');
       const resultCard  = document.getElementById('resultCard');
+      const condCard    = document.getElementById('specialCondCard');
 
-      // 모든 sub 카드 숨김 + 결과 초기화
       goodsCard.style.display   = 'none';
       masCard.style.display     = 'none';
       serviceCard.style.display = 'none';
       resultCard.style.display  = 'none';
+      condCard.style.display    = 'none';
+      document.getElementById('wtoBanner').style.display = 'none';
+      document.getElementById('relatedLawsCard').style.display = 'none';
       selectedMasProduct = null;
       document.querySelectorAll('.subtype-btn').forEach(b => b.classList.remove('active'));
 
@@ -527,10 +769,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         serviceCard.style.display = 'block';
         scrollToCard('serviceSubCard');
       }
+      updateProgress(2);
     });
   });
 
-  /* 금액 입력 (한글 환산만 — 결과는 버튼 클릭 시) */
+  /* 금액 입력 */
   const amountInput  = document.getElementById('amountInput');
   const amountKorean = document.getElementById('amountKorean');
 
@@ -547,22 +790,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  /* 빠른 선택 버튼 — 금액 설정 후 즉시 조회 */
+  /* 빠른 선택 버튼 — 금액 설정만 */
   document.querySelectorAll('.quick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       amountInput.value = btn.dataset.amount;
       amountInput.dispatchEvent(new Event('input'));
-      submitQuery();
     });
   });
 
-  /* 조회하기 버튼 */
+  /* STEP 3 → STEP 4 버튼 */
+  document.getElementById('toStep4Btn').addEventListener('click', showStep4);
+
+  /* Enter 키로 STEP 4 이동 */
+  amountInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') showStep4();
+  });
+
+  /* 조회하기 버튼 (STEP 4) */
   document.getElementById('submitBtn').addEventListener('click', submitQuery);
 
-  /* Enter 키로도 조회 */
-  amountInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitQuery();
-  });
+  /* 특수조건 체크박스 상호배타 */
+  setupConditionCheckboxes();
 
   /* 데이터 로드 */
   try {
@@ -576,8 +824,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     buildServiceSubGrid();
     renderAmendmentBanner(appData.meta);
 
-    // 초기 상태: 물품 구매 선택돼 있으므로 goodsMethodCard 표시
     document.getElementById('goodsMethodCard').style.display = 'block';
+    updateProgress(1);
 
   } catch (err) {
     document.getElementById('result').innerHTML = `

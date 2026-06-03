@@ -79,6 +79,69 @@ header {
   white-space: nowrap;
 }
 
+/* ── Progress Bar ── */
+.progress-bar-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 20px 0;
+}
+
+.progress-inner {
+  display: flex;
+  gap: 4px;
+}
+
+.progress-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.progress-step .pnum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.progress-step.active {
+  background: var(--color-primary-bg);
+  border-color: #93c5fd;
+  color: var(--color-primary);
+}
+
+.progress-step.active .pnum {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.progress-step.done {
+  background: var(--color-success-bg);
+  border-color: #86efac;
+  color: var(--color-success);
+}
+
+.progress-step.done .pnum {
+  background: var(--color-success);
+  color: #fff;
+}
+
 /* ── Main Layout ── */
 main {
   max-width: 800px;
@@ -107,6 +170,15 @@ main {
   gap: 6px;
 }
 
+.card-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
 /* ── Step 안내 문구 ── */
 .step-guide {
   font-size: 0.84rem;
@@ -115,13 +187,10 @@ main {
   line-height: 1.5;
 }
 
-.card-title::before {
-  content: '';
-  display: inline-block;
-  width: 3px;
-  height: 14px;
-  background: var(--color-primary);
-  border-radius: 2px;
+.step-guide-sub {
+  font-size: 0.78rem;
+  color: var(--color-primary);
+  font-style: italic;
 }
 
 /* ── Category Selector ── */
@@ -156,31 +225,11 @@ main {
   box-shadow: 0 0 0 3px rgba(26, 79, 160, 0.1);
 }
 
-.category-icon {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.category-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.category-desc {
-  font-size: 0.74rem;
-  color: var(--color-text-muted);
-  line-height: 1.4;
-  text-align: center;
-}
-
-.category-btn.active .category-label {
-  color: var(--color-primary);
-}
-
-.category-btn.active .category-desc {
-  color: #3b82f6;
-}
+.category-icon { font-size: 2rem; line-height: 1; }
+.category-label { font-size: 1rem; font-weight: 600; color: var(--color-text); }
+.category-desc { font-size: 0.74rem; color: var(--color-text-muted); line-height: 1.4; text-align: center; }
+.category-btn.active .category-label { color: var(--color-primary); }
+.category-btn.active .category-desc { color: #3b82f6; }
 
 /* ── 추정가격 힌트 ── */
 .amount-hint {
@@ -270,6 +319,14 @@ main {
   letter-spacing: 0.5px;
 }
 
+.quick-btns-sublabel {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .quick-btns {
   display: flex;
   flex-wrap: wrap;
@@ -295,7 +352,6 @@ main {
   background: var(--color-primary-bg);
 }
 
-/* 경계 금액 버튼 강조 */
 .quick-btn.threshold-btn {
   border-color: #a78bfa;
   background: #f5f3ff;
@@ -308,59 +364,11 @@ main {
   color: #5b21b6;
 }
 
-/* 구간 경계 안내 메모 */
 .threshold-note {
   font-size: 0.74rem;
   color: #6d28d9;
   margin-top: 8px;
   padding-left: 2px;
-}
-
-/* ── 빠른 선택 서브라벨 ── */
-.quick-btns-sublabel {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-/* ── Step 안내 서브텍스트 ── */
-.step-guide-sub {
-  font-size: 0.78rem;
-  color: var(--color-primary);
-  font-style: italic;
-}
-
-/* ── MAS 기준금액 참조 테이블 ── */
-.mas-threshold-table {
-  margin-top: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  font-size: 0.82rem;
-}
-.mas-threshold-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  padding: 7px 12px;
-  border-bottom: 1px solid #f1f5f9;
-  gap: 12px;
-  align-items: center;
-}
-.mas-threshold-row:last-child { border-bottom: none; }
-.mas-threshold-row.header {
-  background: var(--color-primary-bg);
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-.threshold-val {
-  font-weight: 700;
-  color: #7c3aed;
-  white-space: nowrap;
 }
 
 /* ── 조회하기 버튼 ── */
@@ -389,6 +397,178 @@ main {
   transform: scale(0.98);
 }
 
+/* ── STEP 4 특수조건 체크박스 ── */
+.special-cond-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cond-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  background: #fff;
+}
+
+.cond-check:hover {
+  border-color: var(--color-primary-light);
+  background: var(--color-primary-bg);
+}
+
+.cond-check:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+  box-shadow: 0 0 0 3px rgba(26, 79, 160, 0.1);
+}
+
+.cond-check.cond-none {
+  border-style: dashed;
+}
+
+.cond-check.cond-none:has(input:checked) {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.cond-check input[type="checkbox"] {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+
+.cond-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.cond-ref {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── WTO 경고 배너 ── */
+.wto-warning-banner {
+  max-width: 760px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #fef2f2, #fff1f2);
+  border: 2px solid #fca5a5;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(220, 38, 38, 0.12);
+  animation: wtoFlash 0.4s ease;
+}
+
+@keyframes wtoFlash {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.wto-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.wto-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #991b1b;
+  margin-bottom: 6px;
+}
+
+.wto-body ul {
+  list-style: none;
+  margin-bottom: 8px;
+}
+
+.wto-body li {
+  font-size: 0.88rem;
+  color: #b91c1c;
+  padding: 2px 0;
+}
+
+.wto-body li::before {
+  content: '⚠ ';
+}
+
+.wto-body li strong {
+  color: #991b1b;
+}
+
+.wto-ref {
+  font-size: 0.74rem;
+  color: #9f1239;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+/* ── 낙찰방법 결과 헤더 ── */
+.award-method-section {
+  background: linear-gradient(135deg, #eff6ff, #eef2ff);
+  border: 1px solid #93c5fd;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.award-method-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.award-method-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin-bottom: 6px;
+}
+
+.award-method-ref {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.sme-info-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+.sme-info-box strong {
+  color: #92400e;
+}
+
 /* ── Result ── */
 #result {
   animation: slideIn 0.25s ease;
@@ -409,11 +589,8 @@ main {
   border-bottom: 1px solid var(--color-border);
 }
 
-.result-method {
-  flex: 1;
-}
+.result-method { flex: 1; }
 
-/* 해당 구간 배지 */
 .result-range-badge {
   display: inline-block;
   background: var(--color-primary-bg);
@@ -486,9 +663,7 @@ main {
 }
 
 /* Legal basis */
-.legal-list {
-  list-style: none;
-}
+.legal-list { list-style: none; }
 
 .legal-item {
   border: 1px solid var(--color-border);
@@ -531,9 +706,7 @@ main {
 }
 
 /* Procedures */
-.procedure-list {
-  list-style: none;
-}
+.procedure-list { list-style: none; }
 
 .procedure-item {
   display: flex;
@@ -544,9 +717,7 @@ main {
   font-size: 0.92rem;
 }
 
-.procedure-item:last-child {
-  border-bottom: none;
-}
+.procedure-item:last-child { border-bottom: none; }
 
 .proc-num {
   display: flex;
@@ -584,7 +755,6 @@ main {
   flex-shrink: 0;
 }
 
-/* 클릭 가능한 법령 배지 */
 a.proc-ref-link {
   text-decoration: none;
   cursor: pointer;
@@ -622,7 +792,7 @@ a.proc-ref-link:hover {
 /* Service Sub-types */
 .subtype-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
 }
 
@@ -668,8 +838,35 @@ a.proc-ref-link:hover {
   line-height: 1.4;
 }
 
-@media (max-width: 600px) {
-  .subtype-grid { grid-template-columns: 1fr; }
+/* ── MAS 기준금액 참조 테이블 ── */
+.mas-threshold-table {
+  margin-top: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  font-size: 0.82rem;
+}
+.mas-threshold-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 7px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
+  align-items: center;
+}
+.mas-threshold-row:last-child { border-bottom: none; }
+.mas-threshold-row.header {
+  background: var(--color-primary-bg);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.threshold-val {
+  font-weight: 700;
+  color: #7c3aed;
+  white-space: nowrap;
 }
 
 /* Warnings */
@@ -697,7 +894,6 @@ a.proc-ref-link:hover {
   flex-shrink: 0;
 }
 
-/* 참고 정보형 주의사항 (파란 스타일) */
 .warning-item.warn-ref {
   color: #1e40af;
 }
@@ -706,7 +902,6 @@ a.proc-ref-link:hover {
   color: #3b82f6;
 }
 
-/* 경중 구분 구분선 */
 .warning-separator {
   font-size: 0.72rem;
   font-weight: 700;
@@ -761,9 +956,7 @@ a.proc-ref-link:hover {
   padding: 10px 14px;
 }
 
-.exceptions-body.open {
-  display: block;
-}
+.exceptions-body.open { display: block; }
 
 .exception-item {
   font-size: 0.88rem;
@@ -780,7 +973,7 @@ a.proc-ref-link:hover {
   font-weight: 700;
 }
 
-/* ── 용역 유형 미선택 안내 ── */
+/* ── 선택 미완료 안내 ── */
 .service-guide {
   display: flex;
   align-items: flex-start;
@@ -790,26 +983,10 @@ a.proc-ref-link:hover {
   border-radius: var(--radius-sm);
   padding: 18px 16px;
 }
-.service-guide-icon {
-  font-size: 1.8rem;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.service-guide-text {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--color-text);
-}
-.service-guide-text strong {
-  color: var(--color-primary);
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.95rem;
-}
-.service-guide-text span {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-}
+.service-guide-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+.service-guide-text { font-size: 0.9rem; line-height: 1.6; color: var(--color-text); }
+.service-guide-text strong { color: var(--color-primary); display: block; margin-bottom: 4px; font-size: 0.95rem; }
+.service-guide-text span { color: var(--color-text-muted); font-size: 0.85rem; }
 
 /* ── 다음 단계 안내 ── */
 .next-step-guide {
@@ -873,14 +1050,8 @@ a.proc-ref-link:hover {
   color: var(--color-text-muted);
 }
 
-.empty-state-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-}
-
-.empty-state-text {
-  font-size: 0.95rem;
-}
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state-text { font-size: 0.95rem; }
 
 /* ── Related Laws ── */
 .related-laws-note {
@@ -894,9 +1065,7 @@ a.proc-ref-link:hover {
   line-height: 1.5;
 }
 
-.related-laws-list {
-  list-style: none;
-}
+.related-laws-list { list-style: none; }
 
 .related-law-item {
   border: 1px solid var(--color-border);
@@ -904,10 +1073,13 @@ a.proc-ref-link:hover {
   padding: 12px 14px;
   margin-bottom: 10px;
   background: #f8fafc;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-
-.related-law-item:last-child {
-  margin-bottom: 0;
+.related-law-item:last-child { margin-bottom: 0; }
+.related-law-item:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
 .related-law-header {
@@ -918,11 +1090,7 @@ a.proc-ref-link:hover {
   flex-wrap: wrap;
 }
 
-.related-law-name {
-  font-weight: 700;
-  font-size: 0.92rem;
-  color: var(--color-text);
-}
+.related-law-name { font-weight: 700; font-size: 0.92rem; color: var(--color-text); }
 
 .related-law-article {
   background: var(--color-primary-bg);
@@ -951,6 +1119,14 @@ a.proc-ref-link:hover {
   color: var(--color-text-muted);
   line-height: 1.5;
   margin-top: 4px;
+}
+
+.detail-hint {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--color-primary-light);
+  font-weight: 600;
 }
 
 /* ── Footer ── */
@@ -989,49 +1165,6 @@ footer {
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-}
-
-/* ── Print ── */
-@media print {
-  body { background: #fff; }
-  header { background: #1a4fa0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .action-btns, .quick-btns, .exceptions-toggle, footer { display: none !important; }
-  .card { box-shadow: none; border: 1px solid #ccc; }
-  .exceptions-body { display: block !important; }
-  main { padding: 0; }
-}
-
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  .header-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .header-badge { display: none; }
-  .card { padding: 18px 16px; }
-  .result-header { flex-direction: column; }
-  .action-btns { flex-direction: column; }
-  .amount-input { font-size: 1rem; }
-  .result-method-name { font-size: 1.1rem; }
-  .category-btn { padding: 16px 12px; }
-  .category-desc { display: none; }  /* 모바일에서 카테고리 설명 숨김 — 공간 절약 */
-  .amount-hint { font-size: 0.78rem; }
-  .threshold-note { font-size: 0.7rem; }
-  .next-step-guide { font-size: 0.78rem; }
-}
-
-/* ── Related law clickable style ── */
-.related-law-item {
-  cursor: pointer;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.related-law-item:hover {
-  border-color: var(--color-primary-light);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-}
-.related-law-item .detail-hint {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 0.75rem;
-  color: var(--color-primary-light);
-  font-weight: 600;
 }
 
 /* ── Modal ── */
@@ -1077,17 +1210,8 @@ footer {
   flex-shrink: 0;
 }
 
-.modal-law-name {
-  font-size: 1.08rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 3px;
-}
-
-.modal-law-article {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-}
+.modal-law-name { font-size: 1.08rem; font-weight: 700; color: var(--color-primary); margin-bottom: 3px; }
+.modal-law-article { font-size: 0.82rem; color: var(--color-text-muted); }
 
 .modal-close {
   background: #f1f5f9;
@@ -1104,9 +1228,7 @@ footer {
   justify-content: center;
   transition: background var(--transition);
 }
-.modal-close:hover {
-  background: #e2e8f0;
-}
+.modal-close:hover { background: #e2e8f0; }
 
 .modal-body {
   overflow-y: auto;
@@ -1114,9 +1236,7 @@ footer {
   flex: 1;
 }
 
-.modal-section {
-  margin-bottom: 20px;
-}
+.modal-section { margin-bottom: 20px; }
 
 .modal-section-title {
   font-size: 0.75rem;
@@ -1137,9 +1257,7 @@ footer {
   padding: 12px 14px;
 }
 
-.modal-caution-list {
-  list-style: none;
-}
+.modal-caution-list { list-style: none; }
 .modal-caution-list li {
   font-size: 0.88rem;
   color: var(--color-text);
@@ -1164,9 +1282,6 @@ footer {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-@media (max-width: 520px) {
-  .modal-info-grid { grid-template-columns: 1fr; }
-}
 
 .modal-info-box {
   border: 1px solid var(--color-border);
@@ -1188,9 +1303,7 @@ footer {
   line-height: 1.55;
 }
 
-.modal-special-list {
-  list-style: none;
-}
+.modal-special-list { list-style: none; }
 .modal-special-list li {
   font-size: 0.88rem;
   color: var(--color-text);
@@ -1225,6 +1338,57 @@ footer {
 }
 .modal-law-link:hover {
   border-bottom-color: var(--color-primary-light);
+}
+
+/* ── 특수조건 적용 결과 표시 ── */
+.special-cond-applied {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+.special-cond-applied strong {
+  color: #92400e;
+}
+
+/* ── Print ── */
+@media print {
+  body { background: #fff; }
+  header { background: #1a4fa0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .action-btns, .quick-btns, .exceptions-toggle, footer, .progress-bar-wrap { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+  .exceptions-body { display: block !important; }
+  main { padding: 0; }
+  .wto-warning-banner { box-shadow: none; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .header-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .header-badge { display: none; }
+  .card { padding: 18px 16px; }
+  .result-header { flex-direction: column; }
+  .action-btns { flex-direction: column; }
+  .amount-input { font-size: 1rem; }
+  .result-method-name { font-size: 1.1rem; }
+  .category-btn { padding: 16px 12px; }
+  .category-desc { display: none; }
+  .amount-hint { font-size: 0.78rem; }
+  .threshold-note { font-size: 0.7rem; }
+  .next-step-guide { font-size: 0.78rem; }
+  .subtype-grid { grid-template-columns: 1fr; }
+  .progress-inner { gap: 2px; }
+  .progress-step { padding: 6px 6px; font-size: 0.68rem; }
+  .progress-step .plabel { display: none; }
+  .progress-step .pnum { min-width: 20px; height: 20px; font-size: 0.65rem; }
+  .modal-info-grid { grid-template-columns: 1fr; }
+  .wto-warning-banner { flex-direction: column; gap: 8px; margin: 0 16px 16px; }
+  .cond-ref { display: none; }
 }
 
 @media print {
