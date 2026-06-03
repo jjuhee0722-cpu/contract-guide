@@ -1,16 +1,76 @@
-/* ── 절차 법령 ref → URL 자동 매핑 ── */
+/* ── 절차 법령 ref → URL 자동 매핑 (조문 딥링크 지원) ── */
 const PROC_REF_URL_MAP = [
   { prefix: '시행규칙', url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙' },
   { prefix: '시행령',   url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령' },
   { prefix: '본법',     url: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률' },
 ];
 
+/* 법령명 → base URL 매핑 (경고 텍스트 내 참조용) */
+const LAW_NAME_URL_MAP = {
+  '시행규칙': 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙',
+  '시행령':   'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령',
+  '본법':     'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률',
+  '국가계약법 시행령': 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령',
+  '국가계약법 시행규칙': 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행규칙',
+  '조달청 고시': 'https://www.pps.go.kr',
+  '업무처리기준': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
+  '업무처리규정': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
+};
+
+/**
+ * ref 문자열에서 조문 번호를 추출하여 딥링크 URL 생성
+ * 예: "시행령 제43조" → "https://www.law.go.kr/법령/.../제43조"
+ * 예: "시행규칙 제44조" → "https://www.law.go.kr/법령/.../제44조"
+ * 복합 참조(제55조·제58조)는 첫 번째 조문으로 딥링크
+ */
 function getProcRefUrl(ref) {
   if (!ref) return null;
   for (const { prefix, url } of PROC_REF_URL_MAP) {
-    if (ref.startsWith(prefix)) return url;
+    if (ref.startsWith(prefix)) {
+      // "제13조의2" 같은 패턴도 지원
+      const artMatch = ref.match(/제(\d+조(?:의\d+)?)/);
+      if (artMatch) {
+        return url + '/제' + artMatch[1];
+      }
+      return url;
+    }
   }
   return null;
+}
+
+/**
+ * 경고/참고정보 텍스트 내 법령 참조를 자동 감지하여 링크로 변환
+ * 예: "(시행규칙 제44조)" → 클릭 가능한 링크
+ * 예: "(시행령 제64조)" → 클릭 가능한 링크
+ */
+function linkifyLawRefs(escapedText) {
+  // 괄호 안의 법령 참조: (시행령 제26조), (시행규칙 제44조) 등
+  return escapedText.replace(
+    /\(([^)]*?(시행규칙|시행령|본법|업무처리기준|업무처리규정|조달청 고시)[^)]*?)\)/g,
+    function(match, inner) {
+      // 법령명 매칭
+      let baseUrl = null;
+      let lawKey = null;
+      for (const [key, url] of Object.entries(LAW_NAME_URL_MAP)) {
+        if (inner.includes(key)) {
+          baseUrl = url;
+          lawKey = key;
+          break;
+        }
+      }
+      if (!baseUrl) return match;
+
+      // 조문 번호 추출 ("제13조의2" 같은 패턴 지원)
+      const artMatch = inner.match(/제(\d+조(?:의\d+)?)/);
+      let finalUrl = baseUrl;
+      if (artMatch && (lawKey === '시행규칙' || lawKey === '시행령' || lawKey === '본법'
+          || lawKey === '국가계약법 시행령' || lawKey === '국가계약법 시행규칙')) {
+        finalUrl = baseUrl + '/제' + artMatch[1];
+      }
+
+      return `(<a class="warn-law-link" href="${finalUrl}" target="_blank" rel="noopener" title="${inner} 원문 보기">${inner} ↗</a>)`;
+    }
+  );
 }
 
 /* ── 주의사항 경중 분류 ── */
@@ -341,13 +401,23 @@ function renderResult(rule, award, conditions) {
     return;
   }
 
-  const legalHTML = rule.legalBasis.map(b => `
+  const legalHTML = rule.legalBasis.map(b => {
+    let legalUrl = b.url || '';
+    // 근거법령 링크도 조문 딥링크 지원
+    if (legalUrl && b.article) {
+      const artMatch = b.article.match(/제(\d+조(?:의\d+)?)/);
+      if (artMatch && !legalUrl.includes('/제')) {
+        legalUrl = legalUrl + '/제' + artMatch[1];
+      }
+    }
+    return `
     <li class="legal-item">
       <div class="legal-article">${escHtml(b.article)}</div>
       <div class="legal-law">${escHtml(b.law)}</div>
       <div class="legal-summary">${escHtml(b.summary)}</div>
-      ${b.url ? `<a class="legal-link" href="${escHtml(b.url)}" target="_blank" rel="noopener">↗ 국가법령정보센터에서 보기</a>` : ''}
-    </li>`).join('');
+      ${legalUrl ? `<a class="legal-link" href="${escHtml(legalUrl)}" target="_blank" rel="noopener">↗ ${escHtml(b.article)} 원문 보기</a>` : ''}
+    </li>`;
+  }).join('');
 
   const procHTML = rule.procedures.map((p, i) => {
     let refEl = '';
@@ -365,8 +435,8 @@ function renderResult(rule, award, conditions) {
 
   const criticalWarns = rule.warnings.filter(w => !isRefWarning(w));
   const refWarns      = rule.warnings.filter(w =>  isRefWarning(w));
-  const criticalHTML  = criticalWarns.map(w => `<li class="warning-item">${escHtml(w)}</li>`).join('');
-  const refHTML       = refWarns.map(w => `<li class="warning-item warn-ref">${escHtml(w)}</li>`).join('');
+  const criticalHTML  = criticalWarns.map(w => `<li class="warning-item">${linkifyLawRefs(escHtml(w))}</li>`).join('');
+  const refHTML       = refWarns.map(w => `<li class="warning-item warn-ref">${linkifyLawRefs(escHtml(w))}</li>`).join('');
   const warnHTML      = criticalHTML + (refHTML ? `<li class="warning-separator">ℹ 참고 정보</li>${refHTML}` : '');
 
   const excHTML = rule.exceptions.map(e => `<div class="exception-item">${escHtml(e)}</div>`).join('');

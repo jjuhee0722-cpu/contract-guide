@@ -766,6 +766,27 @@ a.proc-ref-link:hover {
   box-shadow: 0 0 0 2px rgba(26, 79, 160, 0.12);
 }
 
+/* ── 경고/참고정보 내 법령 링크 ── */
+a.warn-law-link {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+  transition: border-color var(--transition), color var(--transition);
+}
+a.warn-law-link:hover {
+  color: var(--color-primary);
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-primary);
+}
+.warning-item.warn-ref a.warn-law-link {
+  color: #1e40af;
+}
+.warning-item.warn-ref a.warn-law-link:hover {
+  color: #1d4ed8;
+  border-bottom-color: #1d4ed8;
+}
+
 /* ── 법령 개정 알림 배너 ── */
 .amendment-banner {
   max-width: 840px;
