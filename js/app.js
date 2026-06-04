@@ -391,6 +391,227 @@ function renderGuide(icon, title, desc) {
     </div>`;
 }
 
+/* ── 적격심사 상세 안내 (적격심사 결과 시 표시) ── */
+function buildQualGuideHTML() {
+  const REF_URL = 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000274732';
+  return `
+  <div class="rfp-guide qual-guide">
+    <div class="rfp-guide-header qual-header">
+      <div class="rfp-guide-title">📗 적격심사 상세 안내</div>
+      <div class="rfp-guide-subtitle">계약예규 "적격심사기준" · 시행령 제42조 기반 · 초보자용 단계별 가이드</div>
+    </div>
+
+    <!-- ① 적격심사란? -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">① 적격심사란?</div>
+      <div class="qual-overview-box">
+        <div class="qual-overview-main">
+          예정가격 이하 <strong>최저가 입찰자</strong> 순으로<br>
+          계약이행능력을 심사하여<br>
+          종합평점 <strong class="qual-95">95점 이상</strong>이면 낙찰
+        </div>
+        <div class="qual-overview-note">최저가 입찰자가 부적격이면 → 차순위 최저가자를 심사합니다</div>
+      </div>
+      <p class="rfp-desc">적격심사는 <strong>"가격만으로 결정하지 않겠다"</strong>는 취지입니다. 단순 최저가 낙찰이 아니라, 이행실적·경영상태·기술능력 등을 종합 평가하여 계약을 제대로 이행할 수 있는지 확인한 후 낙찰자를 결정합니다.</p>
+      <div class="rfp-ref">근거: 시행령 제42조 제1항·제5항, 계약예규 "적격심사기준" 제1조·제8조</div>
+    </div>
+
+    <!-- ② 심사항목 및 배점 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">② 심사항목 및 배점 — 금액 규모별로 다릅니다</div>
+      <p class="rfp-desc">추정가격이 클수록 <strong>수행능력 비중이 높아지고</strong>, 작을수록 <strong>입찰가격 비중이 높아집니다.</strong> 물품·용역은 공사 기준을 준용하여 각 중앙관서의 장이 정합니다.</p>
+
+      <div class="qual-scale-table">
+        <div class="qual-scale-header">
+          <span>추정가격 규모</span>
+          <span>수행능력</span>
+          <span>입찰가격</span>
+          <span>비율 (능력:가격)</span>
+        </div>
+        <div class="qual-scale-row">
+          <span>50억~100억</span>
+          <span class="qual-pts">50점</span>
+          <span class="qual-pts">50점</span>
+          <span class="qual-ratio"><div class="qual-bar"><div class="qual-bar-fill" style="width:50%"></div></div>50:50</span>
+        </div>
+        <div class="qual-scale-row">
+          <span>10억~50억</span>
+          <span class="qual-pts">30점</span>
+          <span class="qual-pts">70점</span>
+          <span class="qual-ratio"><div class="qual-bar"><div class="qual-bar-fill" style="width:30%"></div></div>30:70</span>
+        </div>
+        <div class="qual-scale-row">
+          <span>3억~10억</span>
+          <span class="qual-pts">20점</span>
+          <span class="qual-pts">80점</span>
+          <span class="qual-ratio"><div class="qual-bar"><div class="qual-bar-fill" style="width:20%"></div></div>20:80</span>
+        </div>
+        <div class="qual-scale-row">
+          <span>2억~3억</span>
+          <span class="qual-pts">10점</span>
+          <span class="qual-pts">90점</span>
+          <span class="qual-ratio"><div class="qual-bar"><div class="qual-bar-fill" style="width:10%"></div></div>10:90</span>
+        </div>
+        <div class="qual-scale-row">
+          <span>2억 미만</span>
+          <span class="qual-pts">10점</span>
+          <span class="qual-pts">90점</span>
+          <span class="qual-ratio"><div class="qual-bar"><div class="qual-bar-fill" style="width:10%"></div></div>10:90</span>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 "적격심사기준" 제5조 별표 (공사 기준, 물품·용역은 이를 준용)</div>
+    </div>
+
+    <!-- ③ 수행능력 심사 세부항목 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">③ 수행능력 심사 — 무엇을 평가하나?</div>
+      <div class="qual-items-grid">
+        <div class="qual-item-card">
+          <div class="qual-item-icon">📊</div>
+          <div class="qual-item-name">납품(시공) 실적</div>
+          <div class="qual-item-desc">해당 물품·용역과 유사한 <strong>최근 5년간 실적</strong> 누계액을 추정금액 대비 비율로 평가</div>
+          <div class="qual-item-tip">물품: 납품실적 / 용역: 수행실적</div>
+        </div>
+        <div class="qual-item-card">
+          <div class="qual-item-icon">💰</div>
+          <div class="qual-item-name">경영상태</div>
+          <div class="qual-item-desc">부채비율·유동비율 또는 <strong>신용평가등급</strong> 중 택 1로 평가</div>
+          <div class="qual-item-tip">신용등급이 유리하면 신용등급 제출 가능</div>
+        </div>
+        <div class="qual-item-card">
+          <div class="qual-item-icon">⭐</div>
+          <div class="qual-item-name">신인도</div>
+          <div class="qual-item-desc">사회적기업 가점, 산재예방 가점, 일자리창출 가점 등 <strong>가감점</strong> 항목</div>
+          <div class="qual-item-tip">벌금·제재 이력은 감점 대상</div>
+        </div>
+        <div class="qual-item-card">
+          <div class="qual-item-icon">🔧</div>
+          <div class="qual-item-name">기술능력 (결격 여부)</div>
+          <div class="qual-item-desc">관계법령상 <strong>등록기준 기술자 보유</strong> 미달 시 최대 10점 감점</div>
+          <div class="qual-item-tip">감점항목이므로 반드시 사전 확인</div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 "적격심사기준" 제5조 별표 / 물품·용역은 각 중앙관서 세부기준에 따름</div>
+    </div>
+
+    <!-- ④ 낙찰하한율 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">④ 낙찰하한율 — 너무 낮은 가격은 안 됩니다</div>
+      <p class="rfp-desc">입찰가격이 예정가격 대비 일정 비율 미만이면 <strong>심사 대상에서 제외</strong>되거나 입찰가격 평점이 낮아집니다.</p>
+      <div class="qual-threshold-cards">
+        <div class="qual-threshold-card">
+          <div class="qual-threshold-label">물품</div>
+          <div class="qual-threshold-value">86.245%</div>
+          <div class="qual-threshold-note">조달청 고시 (2026.5.26~ 기준)<br>매년 변경되므로 반드시 확인</div>
+        </div>
+        <div class="qual-threshold-card">
+          <div class="qual-threshold-label">공사 (100억 미만)</div>
+          <div class="qual-threshold-value">예정가격의 98%</div>
+          <div class="qual-threshold-note">(재료비+노무비+경비+부가세) 기준<br>미만 입찰 시 심사 대상 제외</div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 시행령 제42조, 계약예규 "적격심사기준" 제7조 제1항 / 조달청 낙찰하한율 고시</div>
+    </div>
+
+    <!-- ⑤ 전체 절차 타임라인 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">⑤ 적격심사 전체 절차</div>
+      <div class="rfp-timeline">
+        <div class="tl-item">
+          <div class="tl-marker">1</div>
+          <div class="tl-content">
+            <div class="tl-title">입찰공고</div>
+            <div class="tl-detail">나라장터에 입찰공고 (10일 이상)</div>
+            <div class="tl-detail">낙찰자 결정방법(적격심사), 심사기준 열람 방법 명시</div>
+            <div class="tl-detail">심사에 필요한 서류·제출기한 명시</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">2</div>
+          <div class="tl-content">
+            <div class="tl-title">세부심사기준 열람</div>
+            <div class="tl-detail">입찰참가자가 열람 가능하도록 비치 (공고일~입찰등록마감일)</div>
+            <div class="tl-detail">전자조달시스템 게재로 교부 갈음 가능</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">3</div>
+          <div class="tl-content">
+            <div class="tl-title">입찰 및 개찰</div>
+            <div class="tl-detail">나라장터 전자입찰 원칙</div>
+            <div class="tl-detail">예정가격 이하 최저가 입찰자 확인</div>
+          </div>
+        </div>
+        <div class="tl-item tl-highlight">
+          <div class="tl-marker">4</div>
+          <div class="tl-content">
+            <div class="tl-title">심사서류 요구</div>
+            <div class="tl-detail"><strong>최저가 입찰자</strong>에게 심사 서류 제출 요구</div>
+            <div class="tl-detail">제출기한: 통보받은 날부터 <strong>5일 이상</strong></div>
+            <div class="tl-detail">서류 미비 시 보완 요구 가능 (3일 이상)</div>
+          </div>
+        </div>
+        <div class="tl-item tl-highlight">
+          <div class="tl-marker">5</div>
+          <div class="tl-content">
+            <div class="tl-title">적격심사 실시</div>
+            <div class="tl-detail">서류 제출마감일부터 <strong>7일 이내</strong> 심사 (불가피 시 +3일)</div>
+            <div class="tl-detail">수행능력 + 입찰가격을 합산하여 <strong>종합평점</strong> 산출</div>
+          </div>
+        </div>
+        <div class="tl-item tl-highlight">
+          <div class="tl-marker">6</div>
+          <div class="tl-content">
+            <div class="tl-title">낙찰자 결정</div>
+            <div class="tl-detail">종합평점 <strong>95점 이상</strong> → 낙찰자 결정</div>
+            <div class="tl-detail">95점 미만 → <strong>차순위 최저가자</strong>를 동일 절차로 심사</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">7</div>
+          <div class="tl-content">
+            <div class="tl-title">결과 통보 및 재심사</div>
+            <div class="tl-detail">낙찰/부적격 결과를 지체 없이 통보</div>
+            <div class="tl-detail">부적격 통보 시 <strong>3일 이내 재심사 요청</strong> 가능</div>
+            <div class="tl-detail">재심사 요청 접수 후 3일 이내 재심사 실시</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker">8</div>
+          <div class="tl-content">
+            <div class="tl-title">계약 체결</div>
+            <div class="tl-detail">낙찰자 결정 후 계약보증금 납부 및 계약서 체결</div>
+          </div>
+        </div>
+      </div>
+      <div class="rfp-ref">근거: 계약예규 "적격심사기준" 제2조~제9조 · <a href="${REF_URL}" target="_blank" rel="noopener">계약예규 전문 보기 ↗</a></div>
+    </div>
+
+    <!-- ⑥ 주의사항 -->
+    <div class="rfp-section">
+      <div class="rfp-section-title">⑥ 초보자가 자주 놓치는 포인트</div>
+      <div class="qual-tips-list">
+        <div class="qual-tip-item">
+          <div class="qual-tip-num">1</div>
+          <div class="qual-tip-text"><strong>심사기준일 = 입찰공고일</strong>입니다. 공고일 기준 실적·경영상태·기술자 보유 현황이 심사됩니다.</div>
+        </div>
+        <div class="qual-tip-item">
+          <div class="qual-tip-num">2</div>
+          <div class="qual-tip-text"><strong>허위 서류 제출 시</strong> 낙찰 취소 + 계약 해제 + 부정당업자 제재(입찰참가자격 제한)까지 됩니다.</div>
+        </div>
+        <div class="qual-tip-item">
+          <div class="qual-tip-num">3</div>
+          <div class="qual-tip-text"><strong>물품·용역은 각 중앙관서별 세부기준</strong>이 다를 수 있습니다. 조달청 집행 물품은 조달청 세부기준을 확인하세요.</div>
+        </div>
+        <div class="qual-tip-item">
+          <div class="qual-tip-num">4</div>
+          <div class="qual-tip-text"><strong>경영상태 평가 방식 선택권</strong>이 있습니다. 부채비율·유동비율 또는 신용평가등급 중 유리한 것을 제출할 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
 /* ── 제안서평가 상세 안내 (협상에 의한 계약 시 표시) ── */
 function buildRfpGuideHTML() {
   const REF_URL = 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000272436';
@@ -759,6 +980,7 @@ function renderResult(rule, award, conditions) {
     </div>
 
     ${(award && award.name && (award.name.includes('협상') || award.name.includes('RFP'))) ? buildRfpGuideHTML() : ''}
+    ${(award && award.name && award.name.includes('적격심사')) ? buildQualGuideHTML() : ''}
 
     <div class="action-btns">
       <button class="action-btn" id="printBtn">🖨 인쇄</button>
