@@ -3,7 +3,7 @@ const CONTRACT_DATA = {
     "lastUpdated": "2026-05-12",
     "baseLaw": "국가를 당사자로 하는 계약에 관한 법률",
     "note": "이 파일만 수정하면 웹사이트 내용이 자동 반영됩니다. 법령 개정 시 law.go.kr에서 현행 조문을 확인 후 수정하세요.",
-    "lastChecked": "2026-06-02",
+    "lastChecked": "2026-06-08",
     "lawVersions": {
       "본법": {
         "label": "국가계약법 (본법)",
