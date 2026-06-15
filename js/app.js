@@ -391,6 +391,247 @@ function renderGuide(icon, title, desc) {
     </div>`;
 }
 
+/* ── 공식 서식 / 감사 검토 체크리스트 ── */
+const OFFICIAL_FORM_URLS = {
+  bidApplication: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913185&lsiSeq=282607&efYd=20260102',
+  bidForm: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913189&lsiSeq=282607&efYd=20260102',
+  goodsContract: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913195&lsiSeq=282607&efYd=20260102',
+  serviceContract: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913197&lsiSeq=282607&efYd=20260102',
+  contractGuarantee: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913199&lsiSeq=282607&efYd=20260102',
+  guaranteeSubstitute: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913201&lsiSeq=282607&efYd=20260102',
+  defectGuarantee: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913203&lsiSeq=282607&efYd=20260102',
+  pledge: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913207&lsiSeq=282607&efYd=20260102',
+  sanctionsConfirm: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913209&lsiSeq=282607&efYd=20260102',
+  sanctionsCriteria: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913175&lsiSeq=282607&efYd=20260102',
+  validCompetitionCriteria: 'https://www.law.go.kr/LSW/lsBylInfoP.do?bylSeq=17913179&lsiSeq=282607&efYd=20260102',
+  ruleFormsList: 'https://www.law.go.kr/LSW/lsBylListR.do?lsiSeq=282607&lsId=006590'
+};
+
+function buildOfficialDocLinksHTML(rule, award) {
+  const isService = selectedCategory === 'service';
+  const isGoods = selectedCategory === 'goods';
+  const isBid = !(rule.methodBadge === '수의계약') || (award && /적격심사|협상|RFP|일반경쟁|제한경쟁/.test(award.name || ''));
+  const isMas = rule.methodBadge === 'MAS';
+  const contractForm = isService ? {
+    title: '용역표준계약서',
+    form: '시행규칙 별지 제9호서식',
+    url: OFFICIAL_FORM_URLS.serviceContract
+  } : {
+    title: '물품구매표준계약서',
+    form: '시행규칙 별지 제8호서식',
+    url: OFFICIAL_FORM_URLS.goodsContract
+  };
+
+  const docs = [
+    {
+      phase: '계약 체결',
+      title: contractForm.title,
+      desc: isMas ? 'MAS 발주라도 별도 계약서 작성 또는 계약조건 확인이 필요한 경우 표준계약서 체계를 대조합니다.' : '계약서 작성 시 계약명, 금액, 납품·수행기간, 검사, 지체상금, 대금지급 조건을 빠뜨리지 않습니다.',
+      form: contractForm.form,
+      url: contractForm.url,
+      show: true
+    },
+    {
+      phase: '계약 체결',
+      title: '계약보증금납부서',
+      desc: '계약보증금 징수 대상이면 계약체결 전 납부 여부와 보증서 유효기간을 확인합니다.',
+      form: '시행규칙 별지 제10호서식',
+      url: OFFICIAL_FORM_URLS.contractGuarantee,
+      show: currentAmount > 50000000 || isBid || isMas
+    },
+    {
+      phase: '입찰 보증',
+      title: '입찰보증금의 계약보증금 대체납부신청서',
+      desc: '입찰보증금을 계약보증금으로 대체하려는 경우 사용합니다.',
+      form: '시행규칙 별지 제11호서식',
+      url: OFFICIAL_FORM_URLS.guaranteeSubstitute,
+      show: isBid
+    },
+    {
+      phase: '입찰',
+      title: '입찰참가신청서 / 입찰서',
+      desc: '전자입찰은 나라장터 전자서식으로 처리되지만, 서면 또는 대조가 필요한 경우 공식 서식을 확인합니다.',
+      form: '시행규칙 별지 제3호·제5호서식',
+      url: OFFICIAL_FORM_URLS.bidApplication,
+      extraUrl: OFFICIAL_FORM_URLS.bidForm,
+      extraLabel: '입찰서 보기',
+      show: isBid
+    },
+    {
+      phase: '하자 담보',
+      title: '하자보수보증금납부서',
+      desc: '하자담보책임 또는 유지보수 조건이 있는 물품·용역이면 하자보수보증금 징수 여부를 검토합니다.',
+      form: '시행규칙 별지 제12호서식',
+      url: OFFICIAL_FORM_URLS.defectGuarantee,
+      show: isGoods || selectedServiceType === 'service_tech'
+    },
+    {
+      phase: '제재 확인',
+      title: '부정당업자제재확인서 / 제한기준',
+      desc: '계약 전 제재 여부, 대표자·공동수급체 관련 제한 여부를 확인합니다.',
+      form: '시행규칙 별지 제15호서식 / 별표 2',
+      url: OFFICIAL_FORM_URLS.sanctionsConfirm,
+      extraUrl: OFFICIAL_FORM_URLS.sanctionsCriteria,
+      extraLabel: '제한기준 보기',
+      show: isBid || currentAmount > 20000000
+    }
+  ].filter(d => d.show);
+
+  const docItems = docs.map(d => `
+    <div class="official-doc-card">
+      <div class="official-doc-phase">${escHtml(d.phase)}</div>
+      <div class="official-doc-title">${escHtml(d.title)}</div>
+      <div class="official-doc-desc">${escHtml(d.desc)}</div>
+      <div class="official-doc-form">${escHtml(d.form)}</div>
+      <div class="official-doc-actions">
+        <a href="${escHtml(d.url)}" target="_blank" rel="noopener">서식 바로가기 ↗</a>
+        ${d.extraUrl ? `<a href="${escHtml(d.extraUrl)}" target="_blank" rel="noopener">${escHtml(d.extraLabel)} ↗</a>` : ''}
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="result-section official-doc-section">
+    <div class="section-title">🧾 계약 서류·공식 서식</div>
+    <p class="official-doc-intro">법제처 국가법령정보센터의 국가계약법 시행규칙 별지서식 중 이 계약에서 확인할 가능성이 큰 서식입니다. 기관 내부 양식이나 나라장터 전자서식이 우선 적용될 수 있으니, 최종 작성 전 소속기관 지침도 함께 확인하세요.</p>
+    <div class="official-doc-grid">${docItems}</div>
+    <div class="official-doc-all">
+      <a href="${OFFICIAL_FORM_URLS.ruleFormsList}" target="_blank" rel="noopener">국가계약법 시행규칙 별표·서식 목록 전체 보기 ↗</a>
+    </div>
+  </div>`;
+}
+
+function buildAuditChecklistHTML(rule, award, conditions) {
+  const isSuui = rule.methodBadge === '수의계약' || (award && /수의/.test(award.name || ''));
+  const isMas = rule.methodBadge === 'MAS';
+  const isRfp = award && /협상|RFP/.test(award.name || '');
+  const isQual = award && /적격심사/.test(award.name || '');
+  const isWto = currentAmount >= WTO_THRESHOLD;
+
+  const items = [
+    {
+      title: '추정가격·예산 확인',
+      desc: 'VAT 제외 추정가격인지, 같은 목적의 구매를 금액 기준 회피 목적으로 분할하지 않았는지 확인합니다.',
+      ref: '시행령 제7조·제9조, 분할발주 금지 원칙',
+      level: 'must'
+    },
+    {
+      title: '계약방법 선택 사유',
+      desc: isSuui
+        ? '수의계약은 금액 기준 또는 특수사유가 문서로 남아야 합니다. 특정 업체 선정을 유도하는 사양은 특히 주의합니다.'
+        : '일반·제한경쟁, 적격심사, 협상계약 중 왜 이 방법을 선택했는지 품의서와 공고문에 일관되게 남깁니다.',
+      ref: isSuui ? '시행령 제26조' : '시행령 제21조·제42조·제43조',
+      level: 'must'
+    },
+    {
+      title: '입찰참가자격·제한요건',
+      desc: '실적·면허·지역·중소기업 제한은 과도하면 경쟁제한 지적을 받을 수 있습니다. 필요성, 관련 법령, 과업 연관성을 함께 적습니다.',
+      ref: '시행령 제21조, 중소기업제품 구매촉진 관련 기준',
+      level: 'must'
+    },
+    {
+      title: isRfp ? '평가기준 사전공개·위원 이해충돌' : '낙찰자 결정기준 사전공개',
+      desc: isRfp
+        ? '정성·정량 배점, 차등점수제 여부, 협상적격자 기준, 평가위원 제척·회피 사항을 공고/RFP에 미리 명시합니다.'
+        : '적격심사 세부기준, 낙찰하한율, 제출서류, 제출기한을 공고 단계에서 참가자가 알 수 있어야 합니다.',
+      ref: isRfp ? '시행령 제43조, 계약예규 협상에 의한 계약체결기준' : '계약예규 적격심사기준 제2조·제3조',
+      level: 'must',
+      show: isRfp || isQual
+    },
+    {
+      title: '예정가격·기초금액 산정 근거',
+      desc: '견적, 거래실례가격, 원가계산 등 산정 근거를 남기고, 특정 견적 하나에만 기대지 않도록 검토합니다.',
+      ref: '시행령 제9조',
+      level: 'must'
+    },
+    {
+      title: '계약보증금·하자보증',
+      desc: '계약보증금 징수 또는 면제 사유, 하자보수보증금 필요 여부, 보증기간과 보증금액을 계약서와 일치시킵니다.',
+      ref: '시행령 제50조, 시행규칙 별지 제10호·제12호서식',
+      level: 'must'
+    },
+    {
+      title: '검사·검수와 대금지급',
+      desc: '납품·용역완료 후 검사/검수 결과, 세금계산서, 대금청구서, 지체상금 여부를 확인한 뒤 지급합니다.',
+      ref: '시행령 제55조·제58조·제74조',
+      level: 'must'
+    },
+    {
+      title: 'MAS 구매 적정성',
+      desc: '쇼핑몰 등록 물품 여부, 2단계경쟁 기준금액, 동일·유사 규격 비교, 분할구매 회피 여부를 확인합니다.',
+      ref: '물품 다수공급자계약 업무처리규정 제49조',
+      level: 'must',
+      show: isMas
+    },
+    {
+      title: 'WTO·국제입찰 검토',
+      desc: '고시금액 이상이면 중소기업 제한, 공고기간, 영문공고 등 국제입찰 적용 여부를 별도로 검토합니다.',
+      ref: '국가계약법 제4조',
+      level: 'warn',
+      show: isWto
+    },
+    {
+      title: '기록 보존',
+      desc: '품의, 공고문, 예정가격 산정자료, 견적/입찰서, 평가표, 계약서, 보증서, 검사조서, 지급자료를 한 묶음으로 보관합니다.',
+      ref: '감사 대응 핵심 증빙',
+      level: 'info'
+    }
+  ].filter(item => item.show !== false);
+
+  const applied = conditions && conditions.length
+    ? `<div class="audit-applied">선택된 특수조건: ${conditions.map(c => escHtml(c.label)).join(', ')}</div>`
+    : '';
+
+  return `
+  <div class="result-section audit-check-section">
+    <div class="section-title">🔎 조달 검토 체크리스트</div>
+    <p class="audit-check-intro">계약담당자가 실무에서 감사 지적을 받기 쉬운 지점을 먼저 확인하도록 만든 체크리스트입니다. 아래 항목은 결과 계약방법과 입력 조건에 맞춰 표시됩니다.</p>
+    ${applied}
+    <div class="audit-check-grid">
+      ${items.map(item => `
+        <div class="audit-check-card ${escHtml(item.level)}">
+          <div class="audit-check-top">
+            <span class="audit-check-badge">${item.level === 'warn' ? '주의' : item.level === 'info' ? '보관' : '필수'}</span>
+            <strong>${escHtml(item.title)}</strong>
+          </div>
+          <div class="audit-check-desc">${escHtml(item.desc)}</div>
+          <div class="audit-check-ref">${escHtml(item.ref)}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function getProcedureFormLinks(procText, rule) {
+  const links = [];
+  const isService = selectedCategory === 'service';
+  const text = procText || '';
+
+  if (/입찰공고|전자입찰|입찰서/.test(text)) {
+    links.push({ label: '입찰참가신청서', url: OFFICIAL_FORM_URLS.bidApplication });
+    links.push({ label: '입찰서', url: OFFICIAL_FORM_URLS.bidForm });
+  }
+  if (/계약 체결|계약서|수의계약서/.test(text)) {
+    links.push({
+      label: isService ? '용역표준계약서' : '물품구매표준계약서',
+      url: isService ? OFFICIAL_FORM_URLS.serviceContract : OFFICIAL_FORM_URLS.goodsContract
+    });
+  }
+  if (/계약보증금/.test(text)) {
+    links.push({ label: '계약보증금납부서', url: OFFICIAL_FORM_URLS.contractGuarantee });
+  }
+  if (/하자/.test(text)) {
+    links.push({ label: '하자보수보증금납부서', url: OFFICIAL_FORM_URLS.defectGuarantee });
+  }
+  if (/부정당업자|제재/.test(text)) {
+    links.push({ label: '부정당업자제재확인서', url: OFFICIAL_FORM_URLS.sanctionsConfirm });
+  }
+
+  if (!links.length) return '';
+  const unique = links.filter((link, idx, arr) => arr.findIndex(x => x.label === link.label) === idx);
+  return `<span class="proc-form-links">${unique.map(link =>
+    `<a href="${escHtml(link.url)}" target="_blank" rel="noopener">${escHtml(link.label)} ↗</a>`
+  ).join('')}</span>`;
+}
+
 /* ── 적격심사 상세 안내 (적격심사 결과 시 표시) ── */
 function buildQualGuideHTML() {
   const REF_URL = 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000274732';
@@ -902,9 +1143,10 @@ function renderResult(rule, award, conditions) {
         ? `<a class="proc-ref proc-ref-link" href="${escHtml(href)}" target="_blank" rel="noopener" title="${escHtml(p.ref)} 원문 보기">${escHtml(p.ref)} ↗</a>`
         : `<span class="proc-ref">${escHtml(p.ref)}</span>`;
     }
+    const formLinks = getProcedureFormLinks(p.text, rule);
     return `<li class="procedure-item">
       <span class="proc-num">${i + 1}</span>
-      <span class="proc-body">${escHtml(p.text)}${refEl}</span>
+      <span class="proc-body">${escHtml(p.text)}${refEl}${formLinks}</span>
     </li>`;
   }).join('');
 
@@ -965,6 +1207,10 @@ function renderResult(rule, award, conditions) {
       <div class="section-title">📌 필수 절차</div>
       <ul class="procedure-list">${procHTML}</ul>
     </div>
+
+    ${buildAuditChecklistHTML(rule, award, conditions)}
+
+    ${buildOfficialDocLinksHTML(rule, award)}
 
     <div class="result-section">
       <div class="section-title">⚠ 주의사항</div>
