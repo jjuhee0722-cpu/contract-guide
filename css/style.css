@@ -1572,6 +1572,182 @@ footer {
   border-top: 1px dashed #cbd5e1;
 }
 
+/* ── 선금 지급 안내 ── */
+.advance-guide {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.advance-intro {
+  font-size: 0.84rem;
+  color: #7c2d12;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.advance-note {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.advance-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.advance-summary-card {
+  background: #fff;
+  border: 1px solid #fdba74;
+  border-radius: var(--radius-sm);
+  padding: 13px;
+}
+
+.advance-label {
+  display: inline-block;
+  color: #9a3412;
+  font-size: 0.7rem;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.advance-summary-card strong {
+  display: block;
+  color: #1f2937;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.advance-summary-card p {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.advance-summary-card a {
+  color: #c2410c;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.advance-rate-table {
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #fff;
+  margin-bottom: 14px;
+}
+
+.advance-rate-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 1fr;
+}
+
+.advance-rate-row > div {
+  padding: 9px 10px;
+  border-top: 1px solid #ffedd5;
+  font-size: 0.78rem;
+  color: var(--color-text);
+}
+
+.advance-rate-row.head > div {
+  border-top: 0;
+  background: #ffedd5;
+  color: #7c2d12;
+  font-weight: 900;
+}
+
+.advance-rate-row.active > div {
+  background: #ecfdf5;
+  color: #065f46;
+  font-weight: 900;
+}
+
+.advance-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.advance-flow-step {
+  background: #fff;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  min-height: 122px;
+}
+
+.advance-flow-step span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ea580c;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.advance-flow-step strong {
+  display: block;
+  color: var(--color-text);
+  font-size: 0.86rem;
+  margin-bottom: 6px;
+}
+
+.advance-flow-step p {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.advance-docs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.advance-docs > div {
+  background: #fff;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-sm);
+  padding: 13px;
+}
+
+.advance-docs strong {
+  display: block;
+  color: #7c2d12;
+  font-size: 0.86rem;
+  margin-bottom: 8px;
+}
+
+.advance-docs ul {
+  padding-left: 18px;
+}
+
+.advance-docs li {
+  color: var(--color-text);
+  font-size: 0.77rem;
+  line-height: 1.55;
+  margin-bottom: 5px;
+}
+
 /* ── 제안서평가 상세 안내 (RFP Guide) ── */
 .rfp-guide {
   margin-top: 24px;
@@ -2314,11 +2490,22 @@ footer {
   .modal-info-grid { grid-template-columns: 1fr; }
   .wto-warning-banner { flex-direction: column; gap: 8px; margin: 0 16px 16px; }
   .audit-check-grid,
-  .official-doc-grid {
+  .official-doc-grid,
+  .advance-summary-grid,
+  .advance-flow,
+  .advance-docs {
     grid-template-columns: 1fr;
   }
-  .official-doc-section {
+  .official-doc-section,
+  .advance-guide {
     padding: 14px;
+  }
+  .advance-rate-table {
+    overflow-x: auto;
+  }
+  .advance-rate-row {
+    grid-template-columns: minmax(92px, 1fr) minmax(136px, 1.2fr) minmax(90px, 0.8fr);
+    min-width: 430px;
   }
   .proc-form-links {
     width: 100%;

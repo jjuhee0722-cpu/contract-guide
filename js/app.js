@@ -16,6 +16,7 @@ const LAW_NAME_URL_MAP = {
   '업무처리기준': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
   '업무처리규정': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000276242',
   '계약예규 "협상에 의한 계약체결기준"': 'https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000272436',
+  '계약예규 "정부 입찰·계약 집행기준"': 'https://www.law.go.kr/행정규칙/(계약예규)%20정부%20입찰·계약%20집행기준',
   '국고금관리법 시행령': 'https://www.law.go.kr/법령/국고금관리법시행령',
 };
 
@@ -407,6 +408,12 @@ const OFFICIAL_FORM_URLS = {
   ruleFormsList: 'https://www.law.go.kr/LSW/lsBylListR.do?lsiSeq=282607&lsId=006590'
 };
 
+const ADVANCE_PAYMENT_URLS = {
+  treasury40: 'https://www.law.go.kr/법령/국고금관리법시행령/제40조',
+  executionRule: 'https://www.law.go.kr/행정규칙/(계약예규)%20정부%20입찰·계약%20집행기준',
+  stateContractRule37: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령/제37조'
+};
+
 function buildOfficialDocLinksHTML(rule, award) {
   const isService = selectedCategory === 'service';
   const isGoods = selectedCategory === 'goods';
@@ -464,6 +471,16 @@ function buildOfficialDocLinksHTML(rule, award) {
       form: '시행규칙 별지 제12호서식',
       url: OFFICIAL_FORM_URLS.defectGuarantee,
       show: isGoods || selectedServiceType === 'service_tech'
+    },
+    {
+      phase: '선금',
+      title: '선금신청서·선금사용계획서',
+      desc: '선금신청서 자체는 국가계약법 시행규칙 별지 표준서식으로 확인되지 않습니다. 기관 내부양식 또는 나라장터 제출양식을 사용하되, 선금사용계획서·전용계좌·보증서 확인은 빠뜨리지 않습니다.',
+      form: '계약예규 "정부 입찰·계약 집행기준" 제34조·제35조',
+      url: ADVANCE_PAYMENT_URLS.executionRule,
+      extraUrl: ADVANCE_PAYMENT_URLS.treasury40,
+      extraLabel: '상한 근거 보기',
+      show: true
     },
     {
       phase: '제재 확인',
@@ -550,6 +567,12 @@ function buildAuditChecklistHTML(rule, award, conditions) {
       level: 'must'
     },
     {
+      title: '선금 신청·보증·정산',
+      desc: '선금은 계약상대자의 신청을 전제로 검토합니다. 선금사용계획서, 선금전용계좌, 보증서, 정산·반환 조건을 확인하고 계약서 또는 지급조건에 남깁니다.',
+      ref: '국고금관리법 시행령 제40조, 계약예규 "정부 입찰·계약 집행기준" 제33조~제39조',
+      level: 'must'
+    },
+    {
       title: '검사·검수와 대금지급',
       desc: '납품·용역완료 후 검사/검수 결과, 세금계산서, 대금청구서, 지체상금 여부를 확인한 뒤 지급합니다.',
       ref: '시행령 제55조·제58조·제74조',
@@ -596,6 +619,106 @@ function buildAuditChecklistHTML(rule, award, conditions) {
           <div class="audit-check-desc">${escHtml(item.desc)}</div>
           <div class="audit-check-ref">${escHtml(item.ref)}</div>
         </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function buildAdvancePaymentGuideHTML() {
+  const isService = selectedCategory === 'service';
+  const isGoods = selectedCategory === 'goods';
+  const amountLabel = `${formatComma(currentAmount)}원 (${toKorean(currentAmount)})`;
+  const isManufacturingOrService = isService || isGoods;
+  let rateBand = '물품 제조·용역인 경우 계약금액 규모별 의무 지급률을 확인하세요.';
+  if (currentAmount >= 1000000000) {
+    rateBand = '10억원 이상 물품 제조·용역: 신청 시 계약금액의 30% 범위 안에서 우선 지급 검토';
+  } else if (currentAmount >= 300000000) {
+    rateBand = '3억원 이상 10억원 미만 물품 제조·용역: 신청 시 계약금액의 40% 범위 안에서 우선 지급 검토';
+  } else {
+    rateBand = '3억원 미만 물품 제조·용역: 신청 시 계약금액의 50% 범위 안에서 우선 지급 검토';
+  }
+
+  const goodsNote = isGoods
+    ? '<div class="advance-note">일반 물품구매는 계약 성격이 “물품의 제조”인지 단순 납품인지 확인하세요. 계약예규의 금액별 지급률 표는 “물품의 제조 및 용역”을 직접 규정합니다.</div>'
+    : '';
+
+  return `
+  <div class="result-section advance-guide">
+    <div class="section-title">💸 선금 지급 안내</div>
+    <p class="advance-intro">발주처가 계약 체결 후 선금 신청을 접수했을 때 확인할 흐름입니다. 선금은 업체 자금 부담 완화를 위한 제도이지만, 발주처가 신청을 강제하면 안 되고 보증·사용계획·정산 조건을 함께 관리해야 합니다.</p>
+    ${goodsNote}
+
+    <div class="advance-summary-grid">
+      <div class="advance-summary-card">
+        <span class="advance-label">최대 한도</span>
+        <strong>계약금액의 70% 이내</strong>
+        <p>국고금관리법 시행령 제40조제1항제15호 및 계약예규 제34조제1항 기준입니다.</p>
+        <a href="${ADVANCE_PAYMENT_URLS.treasury40}" target="_blank" rel="noopener">국고금관리법 시행령 제40조 ↗</a>
+      </div>
+      <div class="advance-summary-card">
+        <span class="advance-label">현재 입력 금액</span>
+        <strong>${escHtml(amountLabel)}</strong>
+        <p>${escHtml(rateBand)}</p>
+        <a href="${ADVANCE_PAYMENT_URLS.executionRule}" target="_blank" rel="noopener">정부 입찰·계약 집행기준 제34조 ↗</a>
+      </div>
+    </div>
+
+    <div class="advance-rate-table" role="table" aria-label="물품 제조 및 용역 선금 지급률">
+      <div class="advance-rate-row head" role="row">
+        <div role="columnheader">대상 계약</div>
+        <div role="columnheader">계약금액</div>
+        <div role="columnheader">신청 시 우선 지급 범위</div>
+      </div>
+      <div class="advance-rate-row ${isManufacturingOrService && currentAmount >= 1000000000 ? 'active' : ''}" role="row">
+        <div role="cell">물품 제조·용역</div>
+        <div role="cell">10억원 이상</div>
+        <div role="cell">30%</div>
+      </div>
+      <div class="advance-rate-row ${isManufacturingOrService && currentAmount >= 300000000 && currentAmount < 1000000000 ? 'active' : ''}" role="row">
+        <div role="cell">물품 제조·용역</div>
+        <div role="cell">3억원 이상 10억원 미만</div>
+        <div role="cell">40%</div>
+      </div>
+      <div class="advance-rate-row ${isManufacturingOrService && currentAmount < 300000000 ? 'active' : ''}" role="row">
+        <div role="cell">물품 제조·용역</div>
+        <div role="cell">3억원 미만</div>
+        <div role="cell">50%</div>
+      </div>
+    </div>
+
+    <div class="advance-flow">
+      ${[
+        ['1', '신청 접수', '계약상대자가 선금신청서를 제출합니다. 발주처는 신청을 강제하지 않습니다.'],
+        ['2', '요건 확인', '공사·물품 제조·용역 계약인지, 부정당업자 제재 등 지급 제한 사유가 없는지 확인합니다.'],
+        ['3', '첨부서류 확인', '선금사용계획서, 선금전용계좌, 하수급인 선금지급계획(해당 시), 보증서 또는 증권을 확인합니다.'],
+        ['4', '보증 검토', '보증금액은 선금액과 약정이자 상당액 이상이어야 하며, 보증기간은 이행기간 종료 후 60일 이상으로 잡습니다.'],
+        ['5', '지급 처리', '신청 또는 보완서류 접수일부터 14일 이내 지급 여부를 처리합니다.'],
+        ['6', '사용·정산 관리', '선금사용내역서, 세금계산서 등 증빙을 확인하고 기성·기납 대가 지급 시 정산 및 반환 사유를 관리합니다.']
+      ].map(step => `
+        <div class="advance-flow-step">
+          <span>${step[0]}</span>
+          <strong>${escHtml(step[1])}</strong>
+          <p>${escHtml(step[2])}</p>
+        </div>`).join('')}
+    </div>
+
+    <div class="advance-docs">
+      <div>
+        <strong>업체 제출 또는 확인 서류</strong>
+        <ul>
+          <li>선금신청서: 법제처 별지 표준서식은 별도 확인되지 않으므로 기관 내부양식 또는 나라장터 제출양식 사용</li>
+          <li>선금사용계획서 및 선금전용계좌: 계약예규 제34조제3항</li>
+          <li>선금보증서·보험증권: 시행령 제37조제2항, 계약예규 제35조</li>
+          <li>하도급이 있으면 하수급인 선금지급계획 및 지급증빙</li>
+        </ul>
+      </div>
+      <div>
+        <strong>발주처 유의사항</strong>
+        <ul>
+          <li>선금 지급조건, 사용, 정산, 반환 조건을 계약조건에 명시합니다.</li>
+          <li>반환 사유: 계약 해제·해지, 사용조건 위반, 하수급인 미지급, 계약금액 감액, 사용증빙 미제출 또는 허위 제출 등</li>
+          <li>계약예규 제34조 일부 개정규정은 2026.7.1 시행 예정 조항이 포함되어 있어 실제 지급 전 최신 예규와 기관 내부지침을 다시 확인하세요.</li>
+        </ul>
+      </div>
     </div>
   </div>`;
 }
@@ -1211,6 +1334,8 @@ function renderResult(rule, award, conditions) {
     ${buildAuditChecklistHTML(rule, award, conditions)}
 
     ${buildOfficialDocLinksHTML(rule, award)}
+
+    ${buildAdvancePaymentGuideHTML(rule, award)}
 
     <div class="result-section">
       <div class="section-title">⚠ 주의사항</div>
